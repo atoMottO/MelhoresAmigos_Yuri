@@ -21,6 +21,10 @@ builder.Services.AddSwaggerGen();
 
 // Registrando o serviço ICurriculoService com sua implementação CurriculoService
 builder.Services.AddScoped<ICurriculoService, CurriculoService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ICertificacaoService, CertificacaoService>();
+builder.Services.AddScoped<IExperienciaService, ExperienciaService>();
+builder.Services.AddScoped<IFormacaoService, FormacaoService>();
 
 // Opcional: se você usar AutoMapper, descomente a linha abaixo
 // builder.Services.AddAutoMapper(typeof(MappingProfile)); 

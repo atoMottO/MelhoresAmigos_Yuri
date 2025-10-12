@@ -4,6 +4,7 @@ using EmpregaAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EmpregaAI.Migrations
 {
     [DbContext(typeof(AplicacaoContext))]
-    partial class AplicacaoContextModelSnapshot : ModelSnapshot
+    [Migration("20251012023339_Migracao2")]
+    partial class Migracao2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,9 +38,6 @@ namespace EmpregaAI.Migrations
 
                     b.Property<DateTime?>("DataConclusao")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool?>("Excluido")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Instituicao")
                         .HasColumnType("nvarchar(max)");
@@ -83,9 +82,6 @@ namespace EmpregaAI.Migrations
                     b.Property<string>("Empresa")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("Excluido")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CurriculoId");
@@ -110,9 +106,6 @@ namespace EmpregaAI.Migrations
 
                     b.Property<DateTime?>("DataInicio")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool?>("Excluido")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Instituicao")
                         .HasColumnType("nvarchar(max)");

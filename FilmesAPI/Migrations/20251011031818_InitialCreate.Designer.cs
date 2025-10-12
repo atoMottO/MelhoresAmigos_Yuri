@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EmpregaAI.Migrations
 {
     [DbContext(typeof(AplicacaoContext))]
-    [Migration("20250914041617_InclusaoTabelaCurriculo")]
-    partial class InclusaoTabelaCurriculo
+    [Migration("20251011031818_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -84,6 +84,32 @@ namespace EmpregaAI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Curriculos");
+                });
+
+            modelBuilder.Entity("EmpregaAPI.Models.Usuario", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool?>("Ativo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Excluido")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Senha")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Usuarios");
                 });
 #pragma warning restore 612, 618
         }
