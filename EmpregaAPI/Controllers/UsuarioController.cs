@@ -18,6 +18,12 @@ public class UsuarioController : ControllerBase
     {
         return Ok(await _UsuarioService.AdicionaUsuario(Usuario));
     }
+    [HttpGet("login")]
+    public async Task<IActionResult> Login([FromQuery] string email, [FromQuery] string senha)
+    {
+        var usuarioLogado = await _UsuarioService.Login(email, senha);
+        return Ok(usuarioLogado);
+    }
     [HttpGet]
     public async Task<IActionResult> ListaUsuarios()
     {

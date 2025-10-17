@@ -23,7 +23,12 @@ namespace EmpregaAI.Services
             await _context.SaveChangesAsync();
             return Usuario;
         }
-
+        public async Task<Boolean> Login(string email, string senha)
+        {
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+            if (senha == usuario.Senha) return true;
+            return false;
+        }
         public async Task<List<Usuario>> ListarUsuarios()
         {
             var lista = await _context.Usuarios.Where(x => x.Excluido != true).ToListAsync();
