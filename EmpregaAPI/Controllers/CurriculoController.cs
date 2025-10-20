@@ -25,6 +25,13 @@ public class CurriculoController : ControllerBase
         return Ok(curriculos);
     }
 
+    [HttpGet("usuario/{usuarioId}")]
+    public async Task<IActionResult> ListarPorUsuario(Guid usuarioId)
+    {
+        var curriculos = await _curriculoService.ListarCurriculoPorIDUsuario(usuarioId);
+        return Ok(curriculos);
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> ListarCurriculoPorId(Guid id)
     {

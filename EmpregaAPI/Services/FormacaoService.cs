@@ -17,7 +17,7 @@ namespace EmpregaAI.Services
         }
         public async Task<Formacao> AdicionaFormacao(Formacao Formacao)
         {
-            Formacao.Id = new Guid();
+            Formacao.Id = Guid.NewGuid();
             Formacao.Excluido = false;
 
             _context.Formacoes.Add(Formacao);

@@ -16,7 +16,7 @@ namespace EmpregaAI.Services
         }
         public async Task<Curriculo> AdicionaCurriculo(Curriculo curriculo)
         {
-            curriculo.Id = new Guid();
+            curriculo.Id = Guid.NewGuid();
             curriculo.Excluido = false;
 
             _context.Curriculos.Add(curriculo);
@@ -38,6 +38,11 @@ namespace EmpregaAI.Services
         public async Task<Curriculo> ListarCurriculoPorID(Guid id)
         {
             return await _context.Curriculos.FirstOrDefaultAsync(x => x.Id == id && x.Excluido != true);
+        }
+
+        public async Task<Curriculo> ListarCurriculoPorIDUsuario(Guid idUsuario)
+        {
+            return await _context.Curriculos.FirstOrDefaultAsync(x => x.UsuarioId == idUsuario && x.Excluido != true);
         }
 
         public async Task<Curriculo> AtualizarCurriculo(Curriculo curriculo)

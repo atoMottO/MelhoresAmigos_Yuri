@@ -16,18 +16,25 @@ namespace EmpregaAI.Services
         }
         public async Task<Usuario> AdicionaUsuario(Usuario Usuario)
         {
-            Usuario.Id = new Guid();
+            Usuario.Id = Guid.NewGuid();
             Usuario.Excluido = false;
 
             _context.Usuarios.Add(Usuario);
             await _context.SaveChangesAsync();
             return Usuario;
         }
-        public async Task<Boolean> Login(string email, string senha)
+        public async Task<Usuario?> Login(string email, string senha)
         {
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
-            if (senha == usuario.Senha) return true;
-            return false;
+
+            if (usuario == null) return null;
+
+            if (senha == usuario.Senha)
+            {
+                return usuario;
+            }
+
+            return null;
         }
         public async Task<List<Usuario>> ListarUsuarios()
         {

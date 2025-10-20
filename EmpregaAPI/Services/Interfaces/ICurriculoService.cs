@@ -9,5 +9,6 @@ namespace EmpregaAI.Services.Interfaces
         Task<Curriculo> ListarCurriculoPorID(Guid id);
         Task<Curriculo> AtualizarCurriculo(Curriculo curriculo);
         Task<Curriculo> ExcluirCurriculo(Curriculo curriculo);
+        Task<Curriculo> ListarCurriculoPorIDUsuario(Guid idUsuario);
     }
 }

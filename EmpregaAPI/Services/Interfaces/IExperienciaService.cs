@@ -8,6 +8,7 @@ namespace EmpregaAI.Services.Interfaces
         Task<Experiencia> AdicionaExperiencia(Experiencia Experiencia);
         Task<List<Experiencia>> ListarExperiencias();
         Task<Experiencia> ListarExperienciaPorID(Guid id);
+        Task<List<Experiencia>> ListarExperienciasPorCurriculoId(Guid curriculoId);
         Task<Experiencia> AtualizarExperiencia(Experiencia Experiencia);
         Task<Experiencia> ExcluirExperiencia(Experiencia Experiencia);
     }

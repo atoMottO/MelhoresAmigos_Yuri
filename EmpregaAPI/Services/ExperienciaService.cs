@@ -17,7 +17,7 @@ namespace EmpregaAI.Services
         }
         public async Task<Experiencia> AdicionaExperiencia(Experiencia Experiencia)
         {
-            Experiencia.Id = new Guid();
+            Experiencia.Id = Guid.NewGuid();
             Experiencia.Excluido = false;
 
             _context.Experiencias.Add(Experiencia);
@@ -39,6 +39,13 @@ namespace EmpregaAI.Services
         public async Task<Experiencia> ListarExperienciaPorID(Guid id)
         {
             return await _context.Experiencias.FirstOrDefaultAsync(x => x.Id == id && x.Excluido != true);
+        }
+
+        public async Task<List<Experiencia>> ListarExperienciasPorCurriculoId(Guid curriculoId)
+        {
+            return await _context.Experiencias
+                .Where(x => x.CurriculoId == curriculoId && x.Excluido != true)
+                .ToListAsync();
         }
 
         public async Task<Experiencia> AtualizarExperiencia(Experiencia Experiencia)

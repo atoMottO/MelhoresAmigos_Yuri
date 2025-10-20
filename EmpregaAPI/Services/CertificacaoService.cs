@@ -17,7 +17,7 @@ namespace EmpregaAI.Services
         }
         public async Task<Certificacao> AdicionaCertificacao(Certificacao Certificacao)
         {
-            Certificacao.Id = new Guid();
+            Certificacao.Id = Guid.NewGuid();
             Certificacao.Excluido = false;
 
             _context.Certificacoes.Add(Certificacao);

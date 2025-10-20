@@ -15,9 +15,9 @@ public class ExperienciaController : ControllerBase
         _ExperienciaService = ExperienciaService;
     }
     [HttpPost]
-    public async Task<IActionResult> AdicionaExperiencia([FromBody] Experiencia Experiencia)
+    public async Task<IActionResult> AdicionaExperiencia([FromBody] Experiencia experiencia)
     {
-        return Ok(await _ExperienciaService.AdicionaExperiencia(Experiencia));
+        return Ok(await _ExperienciaService.AdicionaExperiencia(experiencia));
     }
     [HttpGet]
     public async Task<IActionResult> ListaExperiencias()
@@ -33,6 +33,14 @@ public class ExperienciaController : ControllerBase
 
         return Ok(Experiencia);
     }
+    [HttpGet("ExperienciaPorCurriculo/{id}")]
+    public async Task<IActionResult> ListarExperienciaPorIdCurriculo(Guid idCurriculo)
+    {
+        var Experiencia = await _ExperienciaService.ListarExperienciasPorCurriculoId(idCurriculo);
+
+        return Ok(Experiencia);
+    }
+
 
     [HttpPut("Atualizar")]
     public async Task<IActionResult> AtualizarExperiencia([FromBody] Experiencia Experiencia)
