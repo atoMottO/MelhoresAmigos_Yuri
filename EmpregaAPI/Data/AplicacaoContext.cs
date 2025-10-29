@@ -26,6 +26,9 @@ namespace EmpregaAPI.Data
             // Exemplo: definir nome de tabela
             // modelBuilder.Entity<Curriculo>().ToTable("Curriculos");
 
+            modelBuilder.Entity<Usuario>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
             // Exemplo: definir chave primária
             // modelBuilder.Entity<Curriculo>().HasKey(c => c.Id);
 
