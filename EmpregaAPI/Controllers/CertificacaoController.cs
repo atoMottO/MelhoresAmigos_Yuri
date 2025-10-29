@@ -1,4 +1,5 @@
 ﻿using EmpregaAI.Models;
+using EmpregaAI.Services;
 using EmpregaAI.Services.Interfaces;
 using EmpregaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,14 @@ public class CertificacaoController : ControllerBase
 
         return Ok(Certificacao);
     }
+    [HttpGet("CertificacaoPorCurriculo/{curriculoId}")]
+    public async Task<IActionResult> ListarCertificacaoPorIdCurriculo(Guid curriculoId)
+    {
+        var Certificacao = await _CertificacaoService.ListarCertificacaoPorCurriculoId(curriculoId);
+
+        return Ok(Certificacao);
+    }
+
 
     [HttpPut("Atualizar")]
     public async Task<IActionResult> AtualizarCertificacao([FromBody] Certificacao Certificacao)

@@ -43,9 +43,11 @@ namespace EmpregaAI.Services
 
         public async Task<List<Experiencia>> ListarExperienciasPorCurriculoId(Guid curriculoId)
         {
-            return await _context.Experiencias
+            var experiencias = await _context.Experiencias
                 .Where(x => x.CurriculoId == curriculoId && x.Excluido != true)
+                .OrderByDescending(x => x.DataInicio)
                 .ToListAsync();
+            return experiencias;
         }
 
         public async Task<Experiencia> AtualizarExperiencia(Experiencia Experiencia)

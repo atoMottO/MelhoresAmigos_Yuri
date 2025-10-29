@@ -1,4 +1,5 @@
 ﻿using EmpregaAI.Models;
+using EmpregaAI.Services;
 using EmpregaAI.Services.Interfaces;
 using EmpregaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,14 @@ public class FormacaoController : ControllerBase
         var Formacao = await _FormacaoService.ListarFormacaoPorID(id);
 
         return Ok(Formacao);
+    }
+
+    [HttpGet("FormacaoPorCurriculo/{curriculoId}")]
+    public async Task<IActionResult> ListarFormacaoPorIdCurriculo(Guid curriculoId)
+    {
+        var formacao = await _FormacaoService.ListarFormacaoPorCurriculoId(curriculoId);
+
+        return Ok(formacao);
     }
 
     [HttpPut("Atualizar")]

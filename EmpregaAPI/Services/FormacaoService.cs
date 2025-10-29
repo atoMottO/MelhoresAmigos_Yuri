@@ -51,6 +51,14 @@ namespace EmpregaAI.Services
             return c;
 
         }
+        public async Task<List<Formacao>> ListarFormacaoPorCurriculoId(Guid curriculoId)
+        {
+            var formacoes = await _context.Formacoes
+                .Where(x => x.CurriculoId == curriculoId && x.Excluido != true)
+                .OrderBy(x => x.DataInicio)
+                .ToListAsync();
+            return formacoes;
+        }
         public async Task<Formacao> ExcluirFormacao(Formacao Formacao)
         {
             var c = await ListarFormacaoPorID(Formacao.Id);

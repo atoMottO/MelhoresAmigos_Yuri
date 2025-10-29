@@ -37,7 +37,8 @@ namespace EmpregaAI.Services
 
         public async Task<Curriculo> ListarCurriculoPorID(Guid id)
         {
-            return await _context.Curriculos.FirstOrDefaultAsync(x => x.Id == id && x.Excluido != true);
+            var curriculo = await _context.Curriculos.FirstOrDefaultAsync(x => x.Id == id && x.Excluido != true);
+            return curriculo;
         }
 
         public async Task<Curriculo> ListarCurriculoPorIDUsuario(Guid idUsuario)

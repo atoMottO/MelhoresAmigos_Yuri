@@ -40,6 +40,14 @@ namespace EmpregaAI.Services
         {
             return await _context.Certificacoes.FirstOrDefaultAsync(x => x.Id == id && x.Excluido != true);
         }
+        public async Task<List<Certificacao>> ListarCertificacaoPorCurriculoId(Guid curriculoId)
+        {
+            var certificacoes = await _context.Certificacoes
+                .Where(x => x.CurriculoId == curriculoId && x.Excluido != true)
+                .OrderByDescending(x => x.DataConclusao)
+                .ToListAsync();
+            return certificacoes;
+        }
 
         public async Task<Certificacao> AtualizarCertificacao(Certificacao Certificacao)
         {

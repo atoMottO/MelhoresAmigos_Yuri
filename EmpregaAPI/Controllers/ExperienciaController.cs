@@ -33,10 +33,10 @@ public class ExperienciaController : ControllerBase
 
         return Ok(Experiencia);
     }
-    [HttpGet("ExperienciaPorCurriculo/{id}")]
-    public async Task<IActionResult> ListarExperienciaPorIdCurriculo(Guid idCurriculo)
+    [HttpGet("ExperienciaPorCurriculo/{curriculoId}")]
+    public async Task<IActionResult> ListarExperienciaPorIdCurriculo(Guid curriculoId)
     {
-        var Experiencia = await _ExperienciaService.ListarExperienciasPorCurriculoId(idCurriculo);
+        var Experiencia = await _ExperienciaService.ListarExperienciasPorCurriculoId(curriculoId);
 
         return Ok(Experiencia);
     }
