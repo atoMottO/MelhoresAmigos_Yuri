@@ -51,9 +51,9 @@ namespace EmpregaAI.Services
             return c;
 
         }
-        public async Task<Certificacao> ExcluirCertificacao(Certificacao Certificacao)
+        public async Task<Certificacao> ExcluirCertificacao(Guid idCertificacao)
         {
-            var c = await ListarCertificacaoPorID(Certificacao.Id);
+            var c = await ListarCertificacaoPorID(idCertificacao);
 
             c.Excluido = true;
 

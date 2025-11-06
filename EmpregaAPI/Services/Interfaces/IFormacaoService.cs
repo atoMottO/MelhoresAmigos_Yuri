@@ -9,6 +9,7 @@ namespace EmpregaAI.Services.Interfaces
         Task<List<Formacao>> ListarFormacoes();
         Task<Formacao> ListarFormacaoPorID(Guid id);
         Task<Formacao> AtualizarFormacao(Formacao Formacao);
-        Task<Formacao> ExcluirFormacao(Formacao Formacao);
+        Task<Formacao> ExcluirFormacao(Guid idFormacao);
+        Task<List<Formacao>> ListarFormacaoPorCurriculoId(Guid curriculoId);
     }
 }

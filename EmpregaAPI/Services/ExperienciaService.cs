@@ -51,9 +51,9 @@ namespace EmpregaAI.Services
             return c;
 
         }
-        public async Task<Experiencia> ExcluirExperiencia(Experiencia Experiencia)
+        public async Task<Experiencia> ExcluirExperiencia(Guid idExperiencia)
         {
-            var c = await ListarExperienciaPorID(Experiencia.Id);
+            var c = await ListarExperienciaPorID(idExperiencia);
 
             c.Excluido = true;
 

@@ -42,10 +42,10 @@ public class ExperienciaController : ControllerBase
         return Ok(atualizado);
     }
 
-    [HttpPut("Deletar")]
-    public async Task<IActionResult> ExcluirExperiencia([FromBody] Experiencia Experiencia)
+    [HttpPut("Deletar/{idExperiencia}")]
+    public async Task<IActionResult> ExcluirExperiencia(Guid idExperiencia)
     {
-        var excluido = await _ExperienciaService.ExcluirExperiencia(Experiencia);
+        var excluido = await _ExperienciaService.ExcluirExperiencia(idExperiencia);
 
         return Ok(excluido);
     }

@@ -9,6 +9,6 @@ namespace EmpregaAI.Services.Interfaces
         Task<List<Experiencia>> ListarExperiencias();
         Task<Experiencia> ListarExperienciaPorID(Guid id);
         Task<Experiencia> AtualizarExperiencia(Experiencia Experiencia);
-        Task<Experiencia> ExcluirExperiencia(Experiencia Experiencia);
+        Task<Experiencia> ExcluirExperiencia(Guid idExperiencia);
     }
 }

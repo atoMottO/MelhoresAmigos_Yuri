@@ -16,7 +16,14 @@ namespace EmpregaAI.Services
         }
         public async Task<Usuario> AdicionaUsuario(Usuario Usuario)
         {
-            Usuario.Id = new Guid();
+            var emailExiste = await _context.Usuarios
+                .AnyAsync(u => u.Email == Usuario.Email);
+
+            if (emailExiste)
+            {
+                return null;
+            }
+            Usuario.Id = Guid.NewGuid();
             Usuario.Excluido = false;
 
             _context.Usuarios.Add(Usuario);

@@ -42,10 +42,10 @@ public class CertificacaoController : ControllerBase
         return Ok(atualizado);
     }
 
-    [HttpPut("Deletar")]
-    public async Task<IActionResult> ExcluirCertificacao([FromBody] Certificacao Certificacao)
+    [HttpPut("Deletar/{idCertificacao}")]
+    public async Task<IActionResult> ExcluirCertificacao(Guid idCertificacao)
     {
-        var excluido = await _CertificacaoService.ExcluirCertificacao(Certificacao);
+        var excluido = await _CertificacaoService.ExcluirCertificacao(idCertificacao);
 
         return Ok(excluido);
     }

@@ -1,4 +1,5 @@
-﻿using EmpregaAI.Services.Interfaces;
+﻿using EmpregaAI.Services;
+using EmpregaAI.Services.Interfaces;
 using EmpregaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,9 +15,16 @@ public class UsuarioController : ControllerBase
         _UsuarioService = UsuarioService;
     }
     [HttpPost]
-    public async Task<IActionResult> AdicionaUsuario([FromBody] Usuario Usuario)
+    public async Task<IActionResult> AdicionaUsuario([FromBody] Usuario usuario)
     {
-        return Ok(await _UsuarioService.AdicionaUsuario(Usuario));
+        var novoUsuario = await _UsuarioService.AdicionaUsuario(usuario);
+
+        if (novoUsuario == null)
+        {
+            return BadRequest();
+        }
+
+        return Ok(novoUsuario);
     }
     [HttpGet]
     public async Task<IActionResult> ListaUsuarios()

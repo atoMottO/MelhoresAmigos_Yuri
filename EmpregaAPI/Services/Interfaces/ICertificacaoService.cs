@@ -9,6 +9,7 @@ namespace EmpregaAI.Services.Interfaces
         Task<List<Certificacao>> ListarCertificacoes();
         Task<Certificacao> ListarCertificacaoPorID(Guid id);
         Task<Certificacao> AtualizarCertificacao(Certificacao Certificacao);
-        Task<Certificacao> ExcluirCertificacao(Certificacao Certificacao);
+        Task<Certificacao> ExcluirCertificacao(Guid idCertificacao);
+        Task<List<Certificacao>> ListarCertificacaoPorCurriculoId(Guid curriculoId);
     }
 }

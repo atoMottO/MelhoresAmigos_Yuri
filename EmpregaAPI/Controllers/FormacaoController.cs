@@ -42,10 +42,10 @@ public class FormacaoController : ControllerBase
         return Ok(atualizado);
     }
 
-    [HttpPut("Deletar")]
-    public async Task<IActionResult> ExcluirFormacao([FromBody] Formacao Formacao)
+    [HttpPut("Deletar/{idFormacao}")]
+    public async Task<IActionResult> ExcluirFormacao(Guid idFormacao)
     {
-        var excluido = await _FormacaoService.ExcluirFormacao(Formacao);
+        var excluido = await _FormacaoService.ExcluirFormacao(idFormacao);
 
         return Ok(excluido);
     }
