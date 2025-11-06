@@ -15,6 +15,11 @@ class CurriculoService {
     return response.data;
   }
 
+  async listarCurriculosPorUsuario(usuarioId: string): Promise<Curriculo[]> {
+    const response = await axios.get<Curriculo[]>(`${API_URL}/usuario/${usuarioId}`);
+    return response.data;
+  }
+
   async listarCurriculoPorId(id: string): Promise<Curriculo> {
     const response = await axios.get<Curriculo>(`${API_URL}/${id}`);
     return response.data;

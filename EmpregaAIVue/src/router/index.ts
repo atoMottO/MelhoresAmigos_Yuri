@@ -22,7 +22,17 @@ const routes: Array<RouteRecordRaw> = [
     path: '/curriculo',
     name: 'Curriculo',
     component: Curriculo
-  }
+  },
+  {
+    path: '/curriculo/visualizar/:id',
+    name: 'CurriculoVisualizar',
+    component: () => import('@/views/CurriculoVisualizar.vue')
+  },
+  {
+    path: '/curriculo/editar/:id',
+    name: 'CurriculoEditar',
+    component: () => import('@/views/Curriculo.vue')
+  },
 ]
 
 const router = createRouter({

@@ -1,98 +1,347 @@
 <template>
-  <div class="login-wrapper">
-    <div class="login-container">
-      <div class="login-header">
-        <div class="logo-circle">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </div>
-        <h1>Bem-vindo de volta</h1>
-        <p>Entre com sua conta para continuar</p>
+  <div class="auth-page">
+    <!-- Background animado -->
+    <div 
+      class="bg-left" 
+      :style="{ width: activeMode === 'login' ? '60%' : '40%' }"
+    ></div>
+    <div 
+      class="bg-right" 
+      :style="{ width: activeMode === 'cadastro' ? '60%' : '40%' }"
+    ></div>
+
+    <!-- Container principal -->
+    <div class="auth-container">
+      <!-- SEÇÃO LOGIN -->
+      <div 
+        :class="['auth-section', 'login-section', { active: activeMode === 'login', inactive: activeMode !== 'login' }]"
+      >
+        <!-- Formulário Login -->
+        <transition name="fade-form">
+          <div v-if="activeMode === 'login'" class="form-wrapper" key="login-form">
+            <div class="form-content">
+              <div class="icon-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              
+              <h1>Bem-vindo</h1>
+              <p class="subtitle">Entre com sua conta</p>
+
+              <div class="form-group">
+                <label>Email</label>
+                <input 
+                  type="email" 
+                  v-model="loginEmail"
+                  placeholder="seu@email.com"
+                  @keyup.enter="handleLogin"
+                />
+              </div>
+
+              <div class="form-group">
+                <PasswordInputEscuro type="password" 
+                placeholder="••••••••"
+                v-model="loginPassword"/>
+              </div>
+
+              <button 
+                class="btn-submit" 
+                @click="handleLogin"
+                :disabled="loading"
+              >
+                <span v-if="!loading">Entrar</span>
+                <div v-else class="spinner"></div>
+              </button>
+
+              <div v-if="loginError" class="alert-error-login">
+                {{ loginError }}
+              </div>
+
+              <div class="footer-text">
+                <span>Não tem uma conta?</span>
+                <a @click="changeMode('cadastro')">Cadastre-se</a>
+              </div>
+            </div>
+          </div>
+        </transition>
+
+        <!-- Preview Login -->
+        <transition name="fade-preview">
+          <div v-if="activeMode !== 'login'" class="preview" key="login-preview">
+            <!-- <div class="preview-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <h2>Bem-vindo</h2>
+            <p>Entre com sua conta</p> -->
+          </div>
+        </transition>
       </div>
 
-      <form @submit.prevent="handleLogin" class="login-form">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <div class="input-wrapper">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
-            <input 
-              type="email" 
-              id="email" 
-              v-model="email" 
-              placeholder="seu@email.com"
-              required 
-            />
+      <!-- SEÇÃO CADASTRO -->
+      <div 
+        :class="['auth-section', 'cadastro-section', { active: activeMode === 'cadastro', inactive: activeMode !== 'cadastro' }]"
+      >
+        <!-- Formulário Cadastro -->
+        <transition name="fade-form">
+          <div v-if="activeMode === 'cadastro'" class="form-wrapper" key="cadastro-form">
+            <div class="form-content">
+              <div class="icon-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              
+              <h1>Criar conta</h1>
+              <p class="subtitle">Preencha os dados para começar</p>
+
+              <div class="form-group">
+                <label>Nome completo</label>
+                <input 
+                  type="text" 
+                  v-model="cadastroNome"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Email</label>
+                <input 
+                  type="email" 
+                  v-model="cadastroEmail"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Senha</label>
+                <input 
+                  type="password" 
+                  v-model="cadastroPassword"
+                  placeholder="••••••••"
+                />
+                <small>Mínimo 6 caracteres</small>
+              </div>
+
+              <div class="form-group">
+                <label>Confirmar</label>
+                <input 
+                  type="password" 
+                  v-model="cadastroConfirmPassword"
+                  placeholder="••••••••"
+                  @keyup.enter="handleCadastro"
+                />
+              </div>
+
+              <button 
+                class="btn-submit" 
+                @click="handleCadastro"
+                :disabled="loading"
+              >
+                <span v-if="!loading">Criar Conta</span>
+                <div v-else class="spinner"></div>
+              </button>
+
+              <div v-if="cadastroError" class="alert-error">
+                {{ cadastroError }}
+              </div>
+
+              <div v-if="cadastroSuccess" class="alert-success">
+                {{ cadastroSuccess }}
+              </div>
+
+              <div class="footer-text">
+                <span>Já tem uma conta?</span>
+                <a @click="changeMode('login')">Fazer login</a>
+              </div>
+            </div>
           </div>
-        </div>
+        </transition>
 
-        <div class="form-group">
-          <label for="password">Senha</label>
-          <div class="input-wrapper">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            <input 
-              type="password" 
-              id="password" 
-              v-model="password" 
-              placeholder="••••••••"
-              required 
-            />
+        <!-- Preview Cadastro -->
+        <transition name="fade-preview">
+          <div v-if="activeMode !== 'cadastro'" class="preview" key="cadastro-preview">
+            <!-- <div class="preview-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <h2>Criar conta</h2>
+            <p>Preencha os dados para começar</p> -->
           </div>
-        </div>
-
-        <button type="submit" class="btn-primary" :disabled="loading">
-          <span v-if="!loading">Entrar</span>
-          <span v-else class="loading-spinner"></span>
-        </button>
-
-        <div v-if="errorMessage" class="alert alert-error">
-          {{ errorMessage }}
-        </div>
-      </form>
-
-      <div class="divider">
-        <span>ou</span>
-      </div>
-
-      <div class="register-link">
-        <p>Não tem uma conta? <router-link to="/cadastro">Cadastre-se gratuitamente</router-link></p>
+        </transition>
       </div>
     </div>
+    <div v-if="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
   </div>
 </template>
 
 <script>
+import usuarioService from '@/services/usuarioService';
+import curriculoService from '@/services/curriculoService';
+import PasswordInputEscuro from '@/components/PasswordInputEscuro.vue';
+
 export default {
-  name: 'Login',
+  name: 'AuthUnified',
+  components: {
+    PasswordInputEscuro,
+  },
   data() {
     return {
-      email: '',
-      password: '',
+      activeMode: 'login',
+      loading: false,
+      
+      loginEmail: '',
+      loginPassword: '',
+      loginError: '',
       errorMessage: '',
-      loading: false
+      cadastroNome: '',
+      cadastroEmail: '',
+      cadastroPassword: '',
+      cadastroConfirmPassword: '',
+      cadastroError: '',
+      cadastroSuccess: ''
     }
   },
   methods: {
-    handleLogin() {
-      this.errorMessage = ''
-      this.loading = true
+    changeMode(mode) {
+      this.activeMode = mode;
+      this.loginError = '';
+      this.cadastroError = '';
+      this.cadastroSuccess = '';
+    },
+
+    async handleLogin() {
+      this.loginError = '';
       
-      // Teste simples primeiro
-      setTimeout(() => {
-        if (this.email === 'teste@teste.com' && this.password === '123456') {
-          this.$router.push('/curriculo')
+      if (!this.loginEmail || !this.loginPassword) {
+        this.loginError = 'Preencha todos os campos';
+        return;
+      }
+
+      this.loading = true;
+      
+      try {
+        const loginValido = await usuarioService.login(this.loginEmail, this.loginPassword);
+        
+        if (loginValido) {
+          // Busca o usuário completo
+          const usuarios = await usuarioService.listarUsuarios();
+          const usuario = usuarios.find(u => u.email === this.loginEmail);
+          
+          if (usuario) {
+            const usuarioParaSalvar = {
+              id: usuario.id,
+              email: usuario.email
+            };
+            
+            localStorage.setItem('usuario', JSON.stringify(usuarioParaSalvar));
+            
+            // Verifica se tem currículo usando o service
+            try {
+              const curriculos = await curriculoService.listarCurriculosPorUsuario(usuario.id);
+              console.log(curriculos)
+              if (curriculos) {
+                console.log("AAAAAA")
+                this.$router.push(`/curriculo/visualizar/${curriculos.id}`);
+              } else {
+                // NÃO TEM CURRÍCULO - Vai para criar
+                this.$router.push('/curriculo');
+              }
+            } catch (error) {
+              console.error('Erro ao verificar currículo:', error);
+              // Em caso de erro, vai para criar
+              this.$router.push('/curriculo');
+            }
+          }
         } else {
-          this.errorMessage = 'Email ou senha inválidos'
+          this.loginError = 'Email ou senha inválidos';
         }
-        this.loading = false
-      }, 1000)
+      } catch (error) {
+        console.error('Erro ao fazer login:', error);
+        this.loginError = 'Erro ao fazer login. Tente novamente.';
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async handleCadastro() {
+      this.cadastroError = '';
+      this.cadastroSuccess = '';
+
+      if (this.cadastroNome.length < 3) {
+        this.cadastroError = 'Nome deve ter no mínimo 3 caracteres';
+        return;
+      }
+
+      if (this.cadastroPassword.length < 6) {
+        this.cadastroError = 'Senha deve ter no mínimo 6 caracteres';
+        return;
+      }
+
+      if (this.cadastroPassword !== this.cadastroConfirmPassword) {
+        this.cadastroError = 'As senhas não conferem';
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.cadastroEmail)) {
+        this.cadastroError = 'Email inválido';
+        return;
+      }
+
+      this.loading = true;
+
+      try {
+        const novoUsuario = await usuarioService.adicionarUsuario({
+          nome: this.cadastroNome,
+          email: this.cadastroEmail,
+          senha: this.cadastroPassword
+        });
+        this.cadastroSuccess = 'Cadastro realizado com sucesso!';
+        localStorage.setItem('usuario', JSON.stringify(novoUsuario));
+
+        setTimeout(() => {
+          this.changeMode('login');
+          this.cadastroNome = '';
+          this.cadastroEmail = '';
+          this.cadastroPassword = '';
+          this.cadastroConfirmPassword = '';
+        }, 1500);
+
+      } catch (error) {
+        console.error('Erro ao cadastrar:', error);
+        if (error.response?.status === 400){
+          this.errorMessage = 'E-mail já cadastrado. Redirecionando ao Login'
+          setTimeout(() => {
+            this.errorMessage = '';
+            this.cadastroNome = '';
+            this.cadastroEmail = '';
+            this.cadastroPassword = '';
+            this.cadastroConfirmPassword = '';
+            this.changeMode('login');
+          }, 2000);
+        }
+        else if (error.response) {
+          this.cadastroError = error.response.data.message || 'Erro ao realizar cadastro';
+        } else if (error.request) {
+          this.cadastroError = 'Erro de conexão. Verifique se a API está rodando.';
+        } else {
+          this.cadastroError = 'Erro inesperado ao realizar cadastro';
+        }
+      } finally {
+        this.loading = false;
+      }
     }
   }
 }
@@ -105,228 +354,491 @@ export default {
   box-sizing: border-box;
 }
 
-.login-wrapper {
-  min-height: 100vh;
+.auth-page {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* BACKGROUNDS ANIMADOS */
+.bg-left {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  background: #000;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.bg-right {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  background: #fafafa;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+/* CONTAINER */
+.auth-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+}
+
+.auth-section {
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #ffffff 0%, #2BD2FF 52%, #2BFF88 100%);
-  padding: 20px;
+  transition: flex 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
-.login-container {
-  background: white;
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 48px 40px;
+.auth-section.active {
+  flex: 6;
+}
+
+.auth-section.inactive {
+  flex: 4;
+}
+
+/* FORMULÁRIOS */
+.form-wrapper {
   width: 100%;
   max-width: 440px;
-  animation: slideUp 0.5s ease-out;
+  padding: 0 40px;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.login-header {
+.form-content {
+  width: 100%;
   text-align: center;
-  margin-bottom: 40px;
 }
 
-.logo-circle {
-  width: 72px;
-  height: 72px;
-  background: #02beb598;
-  border-radius: 50%;
+.icon-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 24px;
-  color: white;
-}
-
-.login-header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 8px;
-}
-
-.login-header p {
-  font-size: 15px;
-  color: #718096;
-}
-
-.login-form {
   margin-bottom: 24px;
+  margin: 0 auto 24px;
+}
+
+.login-section .icon-box {
+  background: #fff;
+  color: #000;
+}
+
+.cadastro-section .icon-box {
+  background: #000;
+  color: #fff;
+}
+
+.form-content h1 {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.login-section h1,
+.login-section .subtitle {
+  color: #fff;
+}
+
+.cadastro-section h1,
+.cadastro-section .subtitle {
+  color: #111827;
+}
+
+.subtitle {
+  font-size: 16px;
+  opacity: 0.7;
+  margin-bottom: 32px;
 }
 
 .form-group {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
 .form-group label {
   display: block;
   font-size: 14px;
-  font-weight: 600;
-  color: #2d3748;
+  font-weight: 500;
   margin-bottom: 8px;
 }
 
-.input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
+.login-section label {
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.input-icon {
-  position: absolute;
-  left: 16px;
-  color: #a0aec0;
-  pointer-events: none;
+.cadastro-section label {
+  color: #374151;
 }
 
-.input-wrapper input {
+.form-group input {
   width: 100%;
-  padding: 14px 16px 14px 48px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
   font-size: 15px;
-  transition: all 0.3s ease;
-  background: #f7fafc;
+  border: 1.5px solid;
+  font-family: inherit;
+  transition: all 0.2s;
 }
 
-.input-wrapper input:focus {
+.login-section input {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.login-section input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.login-section input:focus {
   outline: none;
-  border-color: #667eea;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
-.input-wrapper input::placeholder {
-  color: #cbd5e0;
+.cadastro-section input {
+  background: #fff;
+  border-color: #e5e7eb;
+  color: #111827;
 }
 
-.btn-primary {
+.cadastro-section input::placeholder {
+  color: #9ca3af;
+}
+
+.cadastro-section input:focus {
+  outline: none;
+  border-color: #000;
+}
+
+.form-group small {
+  display: block;
+  font-size: 12px;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+.login-section small {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.cadastro-section small {
+  color: #6b7280;
+}
+
+/* BOTÕES */
+.btn-submit {
   width: 100%;
-  padding: 16px;
-  background: #02beb598;
-  color: white;
-  border: none;
-  border-radius: 12px;
+  padding: 14px;
+  border-radius: 10px;
   font-size: 16px;
   font-weight: 600;
+  border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
   margin-top: 8px;
+  min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 52px;
 }
 
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+.login-section .btn-submit {
+  background: #fff;
+  color: #000;
 }
 
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
+.login-section .btn-submit:hover:not(:disabled) {
+  background: #f0f0f0;
+  transform: translateY(-1px);
 }
 
-.btn-primary:disabled {
-  opacity: 0.7;
+.cadastro-section .btn-submit {
+  background: #000;
+  color: #fff;
+}
+
+.cadastro-section .btn-submit:hover:not(:disabled) {
+  background: #1f2937;
+  transform: translateY(-1px);
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.loading-spinner {
+.spinner {
   width: 20px;
   height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border: 2px solid;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  border-top-color: transparent;
+  animation: spin 0.6s linear infinite;
+}
+
+.login-section .spinner {
+  border-color: #000;
+  border-top-color: transparent;
+}
+
+.cadastro-section .spinner {
+  border-color: #fff;
+  border-top-color: transparent;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-.alert {
+/* ALERTAS */
+.alert-error,
+.alert-success {
   padding: 12px 16px;
   border-radius: 10px;
   font-size: 14px;
   margin-top: 16px;
-  animation: shake 0.4s ease;
+  animation: slideDown 0.3s ease;
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-10px); }
-  75% { transform: translateX(10px); }
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .alert-error {
-  background: #fff5f5;
-  color: #c53030;
-  border: 1px solid #feb2b2;
+  position: fixed;
+  bottom: 24px;
+  left: 70%;
+  transform: translateX(-50%);
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: slideUp 0.3s ease;
+  max-width: 90%;
+  text-align: center;
 }
 
-.divider {
-  display: flex;
-  align-items: center;
+.alert-error-login{
+  position: fixed;
+  bottom: 24px;
+  left: 30%;
+  transform: translateX(-50%);
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: slideUp 0.3s ease;
+  max-width: 90%;
   text-align: center;
-  margin: 32px 0;
-  color: #a0aec0;
+}
+
+.alert-success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+/* FOOTER TEXT */
+.footer-text {
+  text-align: center;
+  margin-top: 24px;
   font-size: 14px;
 }
 
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #e2e8f0;
+.login-section .footer-text {
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.divider span {
-  padding: 0 16px;
+.cadastro-section .footer-text {
+  color: #6b7280;
 }
 
-.register-link {
-  text-align: center;
-}
-
-.register-link p {
-  color: #718096;
-  font-size: 15px;
-}
-
-.register-link a {
-  color: #667eea;
-  text-decoration: none;
+.footer-text a {
   font-weight: 600;
-  transition: color 0.3s ease;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: opacity 0.2s;
 }
 
-.register-link a:hover {
-  color: #048a8f;
-  text-decoration: underline;
+.login-section .footer-text a {
+  color: #fff;
 }
 
-@media (max-width: 480px) {
-  .login-container {
-    padding: 32px 24px;
+.cadastro-section .footer-text a {
+  color: #000;
+}
+
+.footer-text a:hover {
+  opacity: 0.7;
+}
+
+/* PREVIEW */
+.preview {
+  text-align: center;
+  padding: 40px;
+}
+
+.preview-icon {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 24px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-section .preview-icon {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.cadastro-section .preview-icon {
+  background: rgba(0, 0, 0, 0.05);
+  color: #000;
+}
+
+.preview h2 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.login-section .preview h2,
+.login-section .preview p {
+  color: #fff;
+}
+
+.cadastro-section .preview h2,
+.cadastro-section .preview p {
+  color: #111827;
+}
+
+.preview p {
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+/* TRANSIÇÕES */
+.fade-form-enter-active {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+}
+
+.fade-form-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-form-enter-from {
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+}
+
+.fade-form-leave-to {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.98);
+}
+
+.fade-preview-enter-active {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s;
+}
+
+.fade-preview-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-preview-enter-from {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.fade-preview-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+  .auth-container {
+    flex-direction: column;
   }
-  
-  .login-header h1 {
-    font-size: 24px;
+
+  .bg-left,
+  .bg-right {
+    height: 50vh;
+    width: 100% !important;
+  }
+
+  .bg-left {
+    top: 0;
+  }
+
+  .bg-right {
+    top: auto;
+    bottom: 0;
+  }
+
+  .auth-section.active {
+    flex: 7;
+  }
+
+  .auth-section.inactive {
+    flex: 3;
+  }
+
+  .form-wrapper {
+    padding: 0 24px;
+  }
+
+  .form-content h1 {
+    font-size: 28px;
+  }
+
+  .alert {
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 16px;
+    animation: slideDown 0.3s ease;
   }
 }
 </style>

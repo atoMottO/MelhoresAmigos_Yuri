@@ -2,87 +2,62 @@
   <div class="cadastro-wrapper">
     <div class="cadastro-container">
       <div class="cadastro-header">
-        <div class="logo-circle">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
             <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
         </div>
-        <h1>Crie sua conta</h1>
-        <p>Preencha os dados abaixo para começar</p>
+        <h1>Criar conta</h1>
+        <p>Preencha os dados para começar</p>
       </div>
 
       <form @submit.prevent="handleCadastro" class="cadastro-form">
         <div class="form-group">
-          <label for="nome">Nome*</label>
-          <div class="input-wrapper">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <input 
-              type="text" 
-              id="nome" 
-              v-model="formUser.nome" 
-              
-              required
-            />
-          </div>
+          <label for="nome">Nome completo</label>
+          <input 
+            type="text" 
+            id="nome" 
+            v-model="formUser.nome" 
+            required
+          />
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <div class="input-wrapper">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
-            <input 
-              type="email" 
-              id="email" 
-              v-model="formUser.email" 
-              required 
-            />
-          </div>
+          <input 
+            type="email" 
+            id="email" 
+            v-model="formUser.email" 
+            required 
+          />
         </div>
 
-        <div class="form-row">
+        <div>
           <div class="form-group">
             <label for="password">Senha</label>
-            <div class="input-wrapper">
-              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-              <input 
-                type="password" 
-                id="password" 
-                v-model="formUser.password" 
-                placeholder="••••••••"
-                required 
-                minlength="6"
-              />
-            </div>
+            <input 
+              type="password" 
+              id="password" 
+              v-model="formUser.password" 
+              placeholder="••••••••"
+              required 
+            />
             <small class="input-hint">Mínimo 6 caracteres</small>
           </div>
-
+        </div>
+        <div>
           <div class="form-group">
             <label for="confirmPassword">Confirmar</label>
-            <div class="input-wrapper">
-              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-              <input 
-                type="password" 
-                id="confirmPassword" 
-                v-model="confirmPassword" 
-                placeholder="••••••••"
-                required 
-              />
-            </div>
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              v-model="confirmPassword" 
+              placeholder="••••••••"
+              required 
+            />
           </div>
         </div>
 
@@ -100,12 +75,9 @@
         </div>
       </form>
 
-      <div class="divider">
-        <span>ou</span>
-      </div>
-
-      <div class="login-link">
-        <p>Já tem uma conta? <router-link to="/login">Faça login</router-link></p>
+      <div class="footer-link">
+        <span>Já tem uma conta?</span>
+        <router-link to="/login">Fazer login</router-link>
       </div>
     </div>
   </div>
@@ -134,24 +106,23 @@ export default {
       this.errorMessage = '';
       this.successMessage = '';
 
-      // Validações
-      if (this.nome.length < 3) {
+      if (this.formUser.nome.length < 3) {
         this.errorMessage = 'Nome deve ter no mínimo 3 caracteres';
         return;
       }
 
-      if (this.password.length < 6) {
+      if (this.formUser.password.length < 6) {
         this.errorMessage = 'Senha deve ter no mínimo 6 caracteres';
         return;
       }
 
-      if (this.password !== this.confirmPassword) {
+      if (this.formUser.password !== this.confirmPassword) {
         this.errorMessage = 'As senhas não conferem';
         return;
       }
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(this.email)) {
+      if (!emailRegex.test(this.formUser.email)) {
         this.errorMessage = 'Email inválido';
         return;
       }
@@ -160,17 +131,17 @@ export default {
 
       try {
         const novoUsuario = await usuarioService.adicionarUsuario({
-          nome: this.nome,
-          email: this.email,
-          senha: this.password
+          nome: this.formUser.nome,
+          email: this.formUser.email,
+          senha: this.formUser.password
         });
 
-        this.successMessage = 'Cadastro realizado com sucesso! Redirecionando...';
+        this.successMessage = 'Cadastro realizado com sucesso!';
         localStorage.setItem('usuario', JSON.stringify(novoUsuario));
 
         setTimeout(() => {
           this.$router.push('/login');
-        }, 2000);
+        }, 100);
 
       } catch (error) {
         console.error('Erro ao cadastrar:', error);
@@ -178,7 +149,7 @@ export default {
         if (error.response) {
           this.errorMessage = error.response.data.message || 'Erro ao realizar cadastro';
         } else if (error.request) {
-          this.errorMessage = 'Erro de conexão com o servidor. Verifique se a API está rodando.';
+          this.errorMessage = 'Erro de conexão. Verifique se a API está rodando.';
         } else {
           this.errorMessage = 'Erro inesperado ao realizar cadastro';
         }
@@ -202,24 +173,24 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #ffffff 0%, #2BD2FF 52%, #2BFF88 100%);
-  padding: 20px;
+  background: #fafafa;
+  padding: 24px;
 }
 
 .cadastro-container {
   background: white;
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 48px 40px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  padding: 48px;
   width: 100%;
-  max-width: 520px;
-  animation: slideUp 0.5s ease-out;
+  max-width: 500px;
+  animation: fadeIn 0.4s ease-out;
 }
 
-@keyframes slideUp {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -229,31 +200,33 @@ export default {
 
 .cadastro-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 }
 
-.logo-circle {
-  width: 72px;
-  height: 72px;
-  background: #02beb598;
-  border-radius: 50%;
+.logo {
+  width: 56px;
+  height: 56px;
+  background: #000;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 24px;
+  margin: 0 auto 20px;
   color: white;
 }
 
 .cadastro-header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a202c;
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
   margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 
 .cadastro-header p {
-  font-size: 15px;
-  color: #718096;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 400;
 }
 
 .cadastro-form {
@@ -261,103 +234,90 @@ export default {
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
 }
 
 .form-group label {
   display: block;
   font-size: 14px;
-  font-weight: 600;
-  color: #2d3748;
+  font-weight: 500;
+  color: #374151;
   margin-bottom: 8px;
 }
 
-.input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.input-icon {
-  position: absolute;
-  left: 16px;
-  color: #00000046;
-  pointer-events: none;
-}
-
-.input-wrapper input {
+input {
   width: 100%;
-  padding: 14px 16px 14px 48px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   font-size: 15px;
-  transition: all 0.3s ease;
-  background: #f7fafc;
-}
-
-.input-wrapper input:focus {
-  outline: none;
-  border-color: #667eea;
+  transition: all 0.2s ease;
   background: white;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  color: #111827;
+  font-family: inherit;
 }
 
-.input-wrapper input::placeholder {
-  color: #cbd5e0;
+input:focus {
+  outline: none;
+  border-color: #000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+input::placeholder {
+  color: #9ca3af;
 }
 
 .input-hint {
   display: block;
   margin-top: 6px;
   font-size: 12px;
-  color: #a0aec0;
+  color: #9ca3af;
 }
 
 .btn-primary {
   width: 100%;
-  padding: 16px;
-  background: #02beb598;
+  padding: 12px;
+  background: #000;
   color: white;
   border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   margin-top: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 52px;
+  min-height: 44px;
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  background: #1f2937;
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: translateY(0);
+  transform: scale(0.98);
 }
 
 .btn-primary:disabled {
-  opacity: 0.7;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .loading-spinner {
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.6s linear infinite;
 }
 
 @keyframes spin {
@@ -365,70 +325,57 @@ export default {
 }
 
 .alert {
-  padding: 12px 16px;
-  border-radius: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
   font-size: 14px;
   margin-top: 16px;
-  animation: shake 0.4s ease;
+  animation: slideDown 0.3s ease;
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-10px); }
-  75% { transform: translateX(10px); }
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .alert-error {
-  background: #fff5f5;
-  color: #c53030;
-  border: 1px solid #feb2b2;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
 .alert-success {
-  background: #f0fff4;
-  color: #2f855a;
-  border: 1px solid #9ae6b4;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
-.divider {
-  display: flex;
-  align-items: center;
+.footer-link {
   text-align: center;
-  margin: 32px 0;
-  color: #a0aec0;
+  padding-top: 24px;
+  border-top: 1px solid #f3f4f6;
   font-size: 14px;
+  color: #6b7280;
 }
 
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #e2e8f0;
+.footer-link span {
+  margin-right: 6px;
 }
 
-.divider span {
-  padding: 0 16px;
-}
-
-.login-link {
-  text-align: center;
-}
-
-.login-link p {
-  color: #718096;
-  font-size: 15px;
-}
-
-.login-link a {
-  color: #667eea;
+.footer-link a {
+  color: #000;
   text-decoration: none;
-  font-weight: 600;
-  transition: color 0.3s ease;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
 }
 
-.login-link a:hover {
-  color: #02a6ac;
-  text-decoration: underline;
+.footer-link a:hover {
+  opacity: 0.7;
 }
 
 @media (max-width: 580px) {
@@ -437,7 +384,7 @@ export default {
   }
   
   .cadastro-header h1 {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .form-row {

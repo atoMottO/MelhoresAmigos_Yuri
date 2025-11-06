@@ -9,7 +9,15 @@ class UsuarioService {
     const response = await axios.post<Usuario>(API_URL, usuario);
     return response.data;
   }
-
+  async login(email: string, senha: string): Promise<Usuario | null> {
+    const response = await axios.get<Usuario | null>(`${API_URL}/login`, {
+      params: {
+        email,
+        senha
+      }
+    });
+    return response.data;
+  }
   async listarUsuarios(): Promise<Usuario[]> {
     const response = await axios.get<Usuario[]>(API_URL);
     return response.data;
