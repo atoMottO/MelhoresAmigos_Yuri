@@ -9,15 +9,18 @@ namespace EmpregaAPI.Controllers;
 public class CurriculoController : ControllerBase
 {
     private readonly ICurriculoService _curriculoService;
+
     public CurriculoController(ICurriculoService curriculoService)
     {
         _curriculoService = curriculoService;
     }
+
     [HttpPost]
     public async Task<IActionResult> AdicionaCurriculo([FromBody] Curriculo curriculo)
     {
         return Ok(await _curriculoService.AdicionaCurriculo(curriculo));
     }
+
     [HttpGet]
     public async Task<IActionResult> ListaCurriculos()
     {
@@ -29,7 +32,10 @@ public class CurriculoController : ControllerBase
     public async Task<IActionResult> ListarCurriculoPorId(Guid id)
     {
         var curriculo = await _curriculoService.ListarCurriculoPorID(id);
-
+        if (curriculo == null)
+        {
+            return NotFound(new { message = "Currículo não encontrado" });
+        }
         return Ok(curriculo);
     }
 
@@ -37,7 +43,10 @@ public class CurriculoController : ControllerBase
     public async Task<IActionResult> AtualizarCurriculo([FromBody] Curriculo curriculo)
     {
         var atualizado = await _curriculoService.AtualizarCurriculo(curriculo);
-
+        if (atualizado == null)
+        {
+            return NotFound(new { message = "Currículo não encontrado" });
+        }
         return Ok(atualizado);
     }
 
@@ -45,7 +54,17 @@ public class CurriculoController : ControllerBase
     public async Task<IActionResult> ExcluirCurriculo([FromBody] Curriculo curriculo)
     {
         var excluido = await _curriculoService.ExcluirCurriculo(curriculo);
-
+        if (excluido == null)
+        {
+            return NotFound(new { message = "Currículo não encontrado" });
+        }
         return Ok(excluido);
+    }
+
+    [HttpGet("usuario/{usuarioId}")]
+    public async Task<IActionResult> ListarCurriculosPorUsuario(Guid usuarioId)
+    {
+        var curriculos = await _curriculoService.ListarCurriculoPorUsuario(usuarioId);
+        return Ok(curriculos);
     }
 }
