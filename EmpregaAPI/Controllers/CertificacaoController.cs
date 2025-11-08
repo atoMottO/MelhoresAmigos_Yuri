@@ -18,9 +18,32 @@ public class CertificacaoController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AdicionaCertificacao([FromBody] Certificacao Certificacao)
+    public async Task<IActionResult> AdicionarCertificacao([FromBody] Certificacao certificacao)
     {
-        return Ok(await _CertificacaoService.AdicionaCertificacao(Certificacao));
+        try
+        {
+            var atualizado = await _CertificacaoService.AdicionaCertificacao(certificacao);
+
+            if (atualizado == null)
+            {
+                return NotFound(new { message = "Certificação não encontrada" });
+            }
+            return Ok(atualizado);
+        }
+        catch (ArgumentException ex)
+        {
+            if (ex.Message == "DataConclusao_Futura")
+            {
+                return BadRequest(new { code = "DataConclusao_Futura", message = "A data de conclusão não pode ser futura." });
+            }
+
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Erro Interno ao atualizar Certificação: {ex}");
+            return StatusCode(500, new { message = "Erro interno no servidor ao processar a atualização." });
+        }
     }
 
     [HttpGet]
@@ -56,9 +79,9 @@ public class CertificacaoController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            if (ex.Message == "DataInicio_Futura")
+            if (ex.Message == "DataConclusao_Futura")
             {
-                return BadRequest(new { code = "DataInicio_Futura", message = "A data de início não pode ser futura." });
+                return BadRequest(new { code = "DataConclusao_Futura", message = "A data de conclusão não pode ser futura." });
             }
 
             return BadRequest(new { message = ex.Message });

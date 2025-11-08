@@ -1,4 +1,6 @@
-﻿using EmpregaAI.Services.Interfaces;
+﻿using EmpregaAI.Models;
+using EmpregaAI.Services;
+using EmpregaAI.Services.Interfaces;
 using EmpregaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +20,24 @@ public class CurriculoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AdicionaCurriculo([FromBody] Curriculo curriculo)
     {
-        return Ok(await _curriculoService.AdicionaCurriculo(curriculo));
+        try
+        {
+            var criado = await _curriculoService.AdicionaCurriculo(curriculo);
+            return Ok(criado);
+        }
+        catch (ArgumentException ex)
+        {
+            if (ex.Message == "DataNascimento_Invalida")
+            {
+                return BadRequest(new { code = "DataNascimento_Invalida", message = "A data de nascimento é inválida." });
+            }
+
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Erro interno no servidor ao processar a atualização." });
+        }
     }
 
     [HttpGet]
@@ -42,12 +61,30 @@ public class CurriculoController : ControllerBase
     [HttpPut("Atualizar")]
     public async Task<IActionResult> AtualizarCurriculo([FromBody] Curriculo curriculo)
     {
-        var atualizado = await _curriculoService.AtualizarCurriculo(curriculo);
-        if (atualizado == null)
+        try
         {
-            return NotFound(new { message = "Currículo não encontrado" });
+            var atualizado = await _curriculoService.AtualizarCurriculo(curriculo);
+
+            if (atualizado == null)
+            {
+                return NotFound(new { message = "Currículo não encontrado" });
+            }
+            return Ok(atualizado);
         }
-        return Ok(atualizado);
+        catch (ArgumentException ex)
+        {
+            if (ex.Message == "DataNascimento_Invalida")
+            {
+                return BadRequest(new { code = "DataNascimento_Invalida", message = "A data de nascimento é inválida." });
+            }
+
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Erro Interno ao atualizar Curriculo: {ex}");
+            return StatusCode(500, new { message = "Erro interno no servidor ao processar a atualização." });
+        }
     }
 
     [HttpPut("Deletar")]

@@ -18,9 +18,32 @@ public class FormacaoController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AdicionaFormacao([FromBody] Formacao Formacao)
+    public async Task<IActionResult> AdicionaFormacao([FromBody] Formacao formacao)
     {
-        return Ok(await _FormacaoService.AdicionaFormacao(Formacao));
+        try
+        {
+            var novaFormacao = await _FormacaoService.AdicionaFormacao(formacao);
+
+            if (novaFormacao == null)
+            {
+                return BadRequest(new { message = "Não foi possível adicionar a formação." });
+            }
+
+            return Ok(novaFormacao);
+        }
+        catch (ArgumentException ex)
+        {
+            if (ex.Message == "DataInicio_Futura")
+            {
+                return BadRequest(new { code = "DataInicio_Futura", message = "A data de início não pode ser futura." });
+            }
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Erro Interno ao adicionar Formacao: {ex}");
+            return StatusCode(500, new { message = "Erro interno no servidor ao processar a adição." });
+        }
     }
 
     [HttpGet]
@@ -42,11 +65,10 @@ public class FormacaoController : ControllerBase
     }
 
     [HttpPut("Atualizar")]
-    public async Task<IActionResult> AtualizarFormacao([FromBody] Formacao formacao) // Usando 'formacao' minúsculo por convenção
+    public async Task<IActionResult> AtualizarFormacao([FromBody] Formacao formacao)
     {
         try
         {
-            // Chama a lógica de atualização que pode lançar a exceção
             var atualizado = await _FormacaoService.AtualizarFormacao(formacao);
 
             if (atualizado == null)
@@ -55,22 +77,17 @@ public class FormacaoController : ControllerBase
             }
             return Ok(atualizado);
         }
-        catch (ArgumentException ex) // <<<<< CAPTURE O ERRO LANÇADO PELO SERVICE
+        catch (ArgumentException ex)
         {
-            // Verifica se é o seu erro de validação (DataInicio_Futura)
             if (ex.Message == "DataInicio_Futura")
             {
-                // Converte a exceção do Service para um HTTP 400 (Bad Request)
                 return BadRequest(new { code = "DataInicio_Futura", message = "A data de início não pode ser futura." });
             }
 
-            // Trata outros ArgumentException genéricos, se houver
             return BadRequest(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            // Captura qualquer outro erro inesperado e ainda retorna 500, mas com log
-            // É essencial fazer o log da exceção aqui (Console, Serilog, etc.)
             Console.Error.WriteLine($"Erro Interno ao atualizar Formacao: {ex}");
             return StatusCode(500, new { message = "Erro interno no servidor ao processar a atualização." });
         }

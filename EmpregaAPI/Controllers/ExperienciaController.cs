@@ -1,4 +1,5 @@
 ﻿using EmpregaAI.Models;
+using EmpregaAI.Services;
 using EmpregaAI.Services.Interfaces;
 using EmpregaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -17,9 +18,32 @@ public class ExperienciaController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AdicionaExperiencia([FromBody] Experiencia Experiencia)
+    public async Task<IActionResult> AdicionaExperiencia([FromBody] Experiencia experiencia)
     {
-        return Ok(await _ExperienciaService.AdicionaExperiencia(Experiencia));
+        try
+        {
+            var novaExperiencia = await _ExperienciaService.AdicionaExperiencia(experiencia);
+
+            if (novaExperiencia == null)
+            {
+                return BadRequest(new { message = "Não foi possível adicionar a experiência." });
+            }
+
+            return Ok(novaExperiencia);
+        }
+        catch (ArgumentException ex)
+        {
+            if (ex.Message == "DataInicio_Futura")
+            {
+                return BadRequest(new { code = "DataInicio_Futura", message = "A data de início não pode ser futura." });
+            }
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Erro Interno ao adicionar Experiência: {ex}");
+            return StatusCode(500, new { message = "Erro interno no servidor ao processar a adição." });
+        }
     }
 
     [HttpGet]
@@ -41,14 +65,32 @@ public class ExperienciaController : ControllerBase
     }
 
     [HttpPut("Atualizar")]
-    public async Task<IActionResult> AtualizarExperiencia([FromBody] Experiencia experiencia)
+    public async Task<IActionResult> AtualizarExperiencia([FromBody] Experiencia Experiencia)
     {
-        var atualizado = await _ExperienciaService.AtualizarExperiencia(experiencia);
-        if (atualizado == null)
+        try
         {
-            return NotFound(new { message = "Experiência não encontrada" });
+            var atualizado = await _ExperienciaService.AtualizarExperiencia(Experiencia);
+
+            if (atualizado == null)
+            {
+                return NotFound(new { message = "Experiência não encontrada" });
+            }
+            return Ok(atualizado);
         }
-        return Ok(atualizado);
+        catch (ArgumentException ex)
+        {
+            if (ex.Message == "DataInicio_Futura")
+            {
+                return BadRequest(new { code = "DataInicio_Futura", message = "A data de início não pode ser futura." });
+            }
+
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Erro Interno ao atualizar Experiência: {ex}");
+            return StatusCode(500, new { message = "Erro interno no servidor ao processar a atualização." });
+        }
     }
 
     [HttpPut("Deletar/{idExperiencia}")]

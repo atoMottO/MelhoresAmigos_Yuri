@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using EmpregaAI.Models;
 using EmpregaAI.Services.Interfaces;
 using EmpregaAPI.Data;
 using EmpregaAPI.Models;
@@ -20,6 +21,10 @@ namespace EmpregaAI.Services
         {
             curriculo.Id = Guid.NewGuid();
             curriculo.Excluido = false;
+            if (curriculo.DataNascimento > DateTime.Today)
+            {
+                throw new ArgumentException("DataNascimento_Invalida");
+            }
             _context.Curriculos.Add(curriculo);
             await _context.SaveChangesAsync();
             return curriculo;
@@ -59,7 +64,10 @@ namespace EmpregaAI.Services
             {
                 return null;
             }
-
+            if (curriculo.DataNascimento > DateTime.Today)
+            {
+                throw new ArgumentException("DataNascimento_Invalida");
+            }
             _context.Entry(c).CurrentValues.SetValues(curriculo);
             await _context.SaveChangesAsync();
             return c;

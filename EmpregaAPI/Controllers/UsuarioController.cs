@@ -26,6 +26,25 @@ public class UsuarioController : ControllerBase
         }
         return Ok(novoUsuario);
     }
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        HttpContext.Session.Clear();
+        return Ok(new { message = "Logout realizado com sucesso" });
+    }
+
+    [HttpGet("verificar-sessao")]
+    public IActionResult VerificarSessao()
+    {
+        var usuarioId = HttpContext.Session.GetString("UsuarioId");
+
+        if (string.IsNullOrEmpty(usuarioId))
+        {
+            return Ok(new { autenticado = false });
+        }
+
+        return Ok(new { autenticado = true });
+    }
 
     [HttpGet]
     public async Task<IActionResult> ListaUsuarios()
@@ -81,7 +100,7 @@ public class UsuarioController : ControllerBase
         {
             return Unauthorized(new { message = "Email ou senha inválidos" });
         }
-
+        HttpContext.Session.SetString("UsuarioId", usuario.Id.ToString());
         return Ok(usuario);
     }
 }
