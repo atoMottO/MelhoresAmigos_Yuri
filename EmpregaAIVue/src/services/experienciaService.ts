@@ -1,4 +1,3 @@
-// src/services/ExperienciaService.ts
 import axios from 'axios';
 import type { Experiencia } from 'src/models/Experiencia';
 

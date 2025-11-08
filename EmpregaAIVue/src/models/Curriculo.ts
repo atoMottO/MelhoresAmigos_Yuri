@@ -2,19 +2,13 @@ export interface Curriculo {
   id: string; 
   nome: string;
   dataNascimento: string;
-  nivelEducacional: string;
   email: string;
-  telefone: string;
-  endereco: string;
-  empresa: string;
-  cargo: string;
-  periodoCargo: string;
-  descricaoAtividade: string;
-  instituto: string;
-  curso: string;
-  periodoInstituto: string;
-  certificacao: string;
-  instituicaoCertificacao: string;
-  periodoCertificacao: string;
+  telefone: string | null;
+  endereco: string | null;
+  cidade: string | null;
+  estado: string | null;
+  resumoProfissional: string | null;
+  linkedin: string | null;
+  github: string | null;
   excluido: boolean;
 }

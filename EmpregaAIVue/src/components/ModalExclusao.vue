@@ -33,7 +33,7 @@
 
 <script>
 export default {
-  name: 'ConfirmacaoModal',
+  name: 'ModalExclusao',
   props: {
     show: {
       type: Boolean,

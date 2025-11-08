@@ -1,6 +1,9 @@
 <template>
   <div class="wrapper">
     <div class="container">
+      <button @click="abrirModal" class="btn-back">
+        Sair
+      </button>
       <div class="header">
         <div class="logo-circle">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -34,7 +37,6 @@
         </div>
       </div>
 
-      <!-- ETAPA 1: DADOS PESSOAIS -->
       <div v-if="step === 1" class="step-content">
         <h2 class="step-title">Dados Pessoais</h2>
         
@@ -49,21 +51,20 @@
             <input type="date" v-model="curriculo.dataNascimento" />
           </div>
           <div class="form-group">
-            <label>Telefone*</label>
+            <label>Telefone</label>
             <input 
               type="tel" 
               v-model="telefoneFormatado" 
               @input="formatarTelefone"
               placeholder="(XX) XXXXX-XXXX"
               maxlength="15"
-              required 
             />
           </div>
         </div>
 
         <div class="form-group">
-          <label>Email*</label>
-          <input type="email" v-model="curriculo.email" required />
+          <label>Email</label>
+          <input type="email" v-model="curriculo.email" disabled/>
         </div>
 
         <div class="form-row">
@@ -93,10 +94,9 @@
           </div>
         </div>
 
-        <button class="btn-primary" @click="nextStep">Continuar</button>
+        <button class="btn-primary" @click="nextStepPerfil">Continuar</button>
       </div>
 
-      <!-- ETAPA 2: EXPERIÊNCIAS -->
       <div v-if="step === 2" class="step-content">
         <h2 class="step-title">Experiências Profissionais</h2>
         <div class="form-card">
@@ -111,8 +111,8 @@
               <input type="text" v-model="novaExperiencia.cargo" />
             </div>
             <div class="form-group">
-              <label>Data Início</label>
-              <input type="date" v-model="novaExperiencia.dataInicio" />
+              <label>Data Início*</label>
+              <input type="date" v-model="novaExperiencia.dataInicio" required/>
             </div>
           </div>
 
@@ -156,8 +156,8 @@
                 <i class="fas fa-pencil"></i>
               </button>
             <button class="btn-remove" @click="removerExperiencia(index)">×</button>
-            <h4>{{ exp.cargo }}</h4>
-            <p class="subtitle">{{ exp.empresa }}</p>
+            <h4>{{ exp.cargo ? exp.cargo : "Não Informado"}}</h4>
+            <p class="subtitle">{{ exp.empresa ? exp.empresa : "Não Informado"}}</p>
             <p class="date">{{ formatarPeriodo(exp.dataInicio, exp.dataFim, exp.empregoAtual) }}</p>
             <p v-if="exp.descricao" class="description">{{ exp.descricao }}</p>
           </div>
@@ -169,7 +169,6 @@
         </div>
       </div>
 
-      <!-- ETAPA 3: FORMAÇÃO -->
       <div v-if="step === 3" class="step-content">
         <h2 class="step-title">Formação Acadêmica</h2>
 
@@ -233,7 +232,6 @@
         </div>
       </div>
 
-      <!-- ETAPA 4: CERTIFICAÇÕES -->
       <div v-if="step === 4" class="step-content">
         <h2 class="step-title">Certificações</h2>
 
@@ -304,8 +302,7 @@
       </div>
     </div>
 
-    <!-- MODAL DE CONFIRMAÇÃO -->
-    <ConfirmacaoModal
+    <ModalExclusao
       :show="showConfirmModal"
       :title="modalConfig.title"
       :message="modalConfig.message"
@@ -314,28 +311,36 @@
       @confirmar="confirmarRemocao"
       @fechar="showConfirmModal = false"
     />
+    <ModalEncerramentoSessao
+      :isOpen="modalAberto"
+      @confirmar="confirmarSair"
+      @fechar="fecharModal"/>
   </div>
 </template>
 
 <script>
 import EstadoDropdown from '@/components/EstadoDropdown.vue'
-import ConfirmacaoModal from '@/components/ConfirmacaoModal.vue'
+import ModalExclusao from '@/components/ModalExclusao.vue'
 import certificacaoService from '@/services/certificacaoService';
 import curriculoService from '@/services/curriculoService';
 import experienciaService from '@/services/experienciaService';
 import formacaoService from '@/services/formacaoService';
+import usuarioService from '@/services/usuarioService';
 import '@fortawesome/fontawesome-free/css/all.css';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import StatusDropdown from '@/components/StatusDropdown.vue';
 import NivelDropdown from '@/components/NivelDropdown.vue';
+import ModalEncerramentoSessao from '@/components/ModalEncerramentoSessao.vue';
 
 export default {
   name: 'CurriculoForm',
+  
   components: {
     EstadoDropdown,
     StatusDropdown,
     NivelDropdown,
-    ConfirmacaoModal
+    ModalExclusao,
+    ModalEncerramentoSessao
   },
   data() {
     return {
@@ -343,7 +348,9 @@ export default {
       editandoIndexExperiencia: null,
       editandoExperiencia: false,
       editandoIndexFormacao: null,
+      editandoFormacao: null,
       editandoIndexCertificacao: null,
+      editandoCertificacao: null,
       loading: false,
       loadingIA: false,
       successMessage: '',
@@ -352,9 +359,12 @@ export default {
       iaMessageType: '',
       telefoneFormatado: '',
       modoEdicao: false,
+      modalAberto: false,
       curriculoId: null,
       showConfirmModal: false,
       itemParaRemover: null,
+      curriculo: {},
+      curriculoOriginal: {},
       modalConfig: {
         title: '',
         message: '',
@@ -405,16 +415,22 @@ export default {
       }
     }
   },
-  
+  watch: {
+    'novaExperiencia.empregoAtual': function(newValue) {
+      if (newValue) {
+          this.novaExperiencia.dataFim = '';
+      }
+    }
+  },
   async created() {
     const usuarioLogado = localStorage.getItem('usuario');
     
     if (usuarioLogado) {
+      console.log(usuarioLogado)
       const usuario = JSON.parse(usuarioLogado);
       this.curriculo.usuarioId = usuario.id;
       this.curriculo.email = usuario.email || '';
       this.curriculo.nomeCompleto = usuario.nome;
-      
       if (this.$route.params.id) {
         this.modoEdicao = true;
         this.curriculoId = this.$route.params.id;
@@ -440,18 +456,31 @@ export default {
             this.curriculo.certificacoes = Array.isArray(certificados) ? certificados : [];
           } catch (error) {
             console.error("Erro ao carregar listas de currículo:", error);
-            this.errorMessage = 'Erro ao carregar experiências, formações ou certificados.';
+            return this.mostrarErro('Erro ao carregar experiências, formações ou certificados.');
           }
         } else {
-          this.errorMessage = 'Currículo para edição não encontrado.';
+          return this.mostrarErro('Currículo para edição não encontrado.');
         }
       }
+      this.curriculo.dataNascimento = this.curriculo.dataNascimento.split('T')[0]
+      this.curriculoOriginal = JSON.parse(JSON.stringify(this.curriculo));
     } else {
       this.$router.push('/login');
     }
   },
 
   methods: {
+    mostrarErro(mensagem){
+      this.errorMessage = mensagem
+      this.$nextTick(() => {
+          window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth'
+        });
+      });
+      setTimeout(() => this.errorMessage = '', 3000);
+      return;
+    },
     resetarFormExperiencia() {
       this.novaExperiencia = {
         empresa: '',
@@ -489,59 +518,89 @@ export default {
 
     editarExperiencia(index) {
       const experiencia = this.curriculo.experiencias[index];
-      
-      this.novaExperiencia = {
-        ...experiencia,
-        dataInicio: experiencia.dataInicio?.split('T')[0] || '',
-        dataFim: experiencia.dataFim?.split('T')[0] || ''
-      };
-      
-      this.editandoIndexExperiencia = index;
-      this.editandoExperiencia = true;
-      
-      this.$nextTick(() => {
-        const formElement = document.querySelector('.step-content .form-card');
-        if (formElement) {
-          formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
+
+      const isEditingSameItem = this.editandoExperiencia && this.editandoIndexExperiencia === index;
+
+      if (isEditingSameItem) {
+            this.novaExperiencia = {
+                cargo: '',
+                empresa: '',
+                dataInicio: '',
+                dataFim: '',
+                descricao: '',
+                atual: false
+            };
+            this.editandoIndexExperiencia = null;
+            this.editandoExperiencia = false;
+            
+      } else {
+        this.novaExperiencia = {
+         ...experiencia,
+         dataInicio: experiencia.dataInicio?.split('T')[0] || '',
+         dataFim: experiencia.dataFim?.split('T')[0] || ''
+        };
+        
+        this.editandoIndexExperiencia = index;
+        this.editandoExperiencia = true;
+      }
     },
 
     editarFormacao(index) {
       const formacao = this.curriculo.formacoes[index];
+
+      const isEditingSameItem = this.editandoFormacao && this.editandoIndexFormacao === index;
       
-      this.novaFormacao = {
-        ...formacao,
-        dataInicio: formacao.dataInicio?.split('T')[0] || '',
-        dataConclusao: formacao.dataConclusao?.split('T')[0] || ''
-      };
-      
-      this.editandoIndexFormacao = index;
-      
-      this.$nextTick(() => {
-        const formElement = document.querySelector('.step-content .form-card');
-        if (formElement) {
-          formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if(isEditingSameItem){
+        this.novaFormacao = {
+          instituicao: '',
+          curso: '',
+          nivel: '',
+          status: '',
+          dataInicio: '',
+          dataConclusao: '',
         }
-      });
+        this.editandoIndexFormacao = null;
+        this.editandoFormacao = null;
+      }
+      else{
+        this.novaFormacao = {
+          ...formacao,
+          dataInicio: formacao.dataInicio?.split('T')[0] || '',
+          dataConclusao: formacao.dataConclusao?.split('T')[0] || ''
+        };
+        
+        this.editandoIndexFormacao = index;
+        this.editandoFormacao = true;
+      }
+      
     },
 
     editarCertificacao(index) {
       const certificacao = this.curriculo.certificacoes[index];
+
+      const isEditingSameItem = this.editandoCertificacao && this.editandoIndexCertificacao === index;
       
-      this.novaCertificacao = {
-        ...certificacao,
-        dataConclusao: certificacao.dataConclusao?.split('T')[0] || ''
-      };
-      
-      this.editandoIndexCertificacao = index;
-      
-      this.$nextTick(() => {
-        const formElement = document.querySelector('.step-content .form-card');
-        if (formElement) {
-          formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if(isEditingSameItem){
+        this.novaCertificacao = {
+          nome: '',
+          instituicao: '',
+          dataConclusao: '',
+          cargaHoraria: '',
+          urlCertificado: '',
         }
-      });
+        this.editandoIndexCertificacao = null;
+        this.editandoCertificacao = null;
+      }
+      else{
+        this.novaCertificacao = {
+          ...certificacao,
+          dataConclusao: certificacao.dataConclusao?.split('T')[0] || ''
+        };
+        
+        this.editandoIndexCertificacao = index;
+        this.editandoCertificacao = true;
+      }
+      
     },
 
     formatarTelefone(event) {
@@ -602,7 +661,6 @@ export default {
 
       return `${inicio} - ${fim}`;
     },
-
     nextStep() {
       if (this.step < 4) this.step++;
     },
@@ -611,7 +669,6 @@ export default {
       if (this.step > 1) this.step--;
     },
     formatarDataAtual(dataRef) {
-      // Extrair o valor do ref
       const dataString = dataRef?.value || dataRef;
       
       if (!dataString) return '';
@@ -630,63 +687,73 @@ export default {
       return `${dia}/${mes}/${ano}`;
     },
     async adicionarExperiencia() {
-      const dataAtual = this.formatarDataAtual(ref(new Date()));
       if (!this.novaExperiencia.descricao) {
-        this.errorMessage = 'Preencha pelo menos a descrição da atividade.';
-        setTimeout(() => this.errorMessage = '', 3000);
-        return;
+        return this.mostrarErro('Preencha a descrição da atividade.');
       }
-      else if(this.novaExperiencia.dataInicio > dataAtual){
-        this.errorMessage = 'A data de início não pode ser posterior à data atual.';
-        setTimeout(() => this.errorMessage = '', 3000);
-        return;
+      else if (!this.novaExperiencia.dataInicio) {
+        return this.mostrarErro('Preencha a data de início da experiência.');
+      }
+      else if(!this.novaExperiencia.empregoAtual && this.novaExperiencia.dataFim == ''){
+        return this.mostrarErro('Preencha a data fim da experiência.');
       }
       else if(!this.novaExperiencia.empregoAtual && (this.novaExperiencia.dataFim < this.novaExperiencia.dataInicio)){
-        this.errorMessage = 'Data fim deve ser posterior à data início.';
-        setTimeout(() => this.errorMessage = '', 3000);
-        return;
+        return this.mostrarErro('Data fim deve ser posterior à data de início.');
       }
 
       try {
-        if (this.editandoIndexExperiencia !== null) { 
-          const expId = this.curriculo.experiencias[this.editandoIndexExperiencia].id;
+          let novaExp;
           
-          if (expId) {
-            await experienciaService.atualizarExperiencia(expId, this.novaExperiencia);
-          }
-          
-          this.curriculo.experiencias.splice(this.editandoIndexExperiencia, 1, { ...this.novaExperiencia });
-          this.successMessage = 'Experiência atualizada!';
+          if (this.editandoIndexExperiencia !== null) { 
+              const expId = this.curriculo.experiencias[this.editandoIndexExperiencia].id;
+              
+              if (expId) {
+                  console.log(this.novaExperiencia);
+                  await experienciaService.atualizarExperiencia(this.novaExperiencia);
+              }
+              
+              this.curriculo.experiencias.splice(this.editandoIndexExperiencia, 1, { ...this.novaExperiencia });
+              this.successMessage = 'Experiência atualizada!';
 
-        } else {
-          if (this.curriculoId) {
-            const experienciaComCurriculo = {
-              ...this.novaExperiencia,
-              dataFim: this.novaExperiencia.empregoAtual || !this.novaExperiencia.dataFim 
-                ? null 
-                : this.novaExperiencia.dataFim,
-              curriculoId: this.curriculoId
-            };
-            const novaExp = await experienciaService.adicionarExperiencia(experienciaComCurriculo);
-            this.curriculo.experiencias.push(novaExp);
           } else {
-            this.curriculo.experiencias.push({ ...this.novaExperiencia });
+              if (this.curriculoId) {
+                  const experienciaComCurriculo = {
+                      ...this.novaExperiencia,
+                      dataFim: this.novaExperiencia.empregoAtual || !this.novaExperiencia.dataFim 
+                          ? null 
+                          : this.novaExperiencia.dataFim,
+                      curriculoId: this.curriculoId
+                  };
+                  
+                  novaExp = await experienciaService.adicionarExperiencia(experienciaComCurriculo);
+                  
+                  this.curriculo.experiencias.push(novaExp);
+              } else {
+                  this.curriculo.experiencias.push({ ...this.novaExperiencia });
+              }
+              
+              this.successMessage = 'Experiência adicionada!';
           }
           
-          this.successMessage = 'Experiência adicionada!';
-        }
-        
-        this.resetarFormExperiencia(); 
-        
+          this.resetarFormExperiencia(); 
+          
       } catch (error) {
-        console.error('Erro ao salvar experiência:', error);
-        this.errorMessage = 'Erro ao salvar experiência. Tente novamente.';
-        setTimeout(() => this.errorMessage = '', 3000);
+          const apiResponse = error.response;
+          if (apiResponse && apiResponse.status === 400) {
+              const errorCode = apiResponse.data.code;
+              
+              if (errorCode === 'DataInicio_Futura'){
+                  return this.mostrarErro('A data de início não pode ser posterior à data atual.');
+              } else {
+                  return this.mostrarErro(apiResponse.data.message || 'Erro de validação ao salvar a experiência.');
+              }
+          } else {
+              return this.mostrarErro('Erro ao salvar experiência. Verifique a conexão e o servidor.');
+          }
+          
       }
       
       setTimeout(() => this.successMessage = '', 2000);
     },
-
     removerExperiencia(index) {
       const experiencia = this.curriculo.experiencias[index];
       
@@ -707,10 +774,20 @@ export default {
     },
 
     async adicionarFormacao() {
-      if (!this.novaFormacao.instituicao && !this.novaFormacao.curso) {
-        this.errorMessage = 'Preencha pelo menos a instituição ou o curso';
-        setTimeout(() => this.errorMessage = '', 3000);
-        return;
+      if (!this.novaFormacao.instituicao) {
+        return this.mostrarErro('Preencha a Nome da Instituição');
+      }
+      else if (!this.novaFormacao.nivel) {
+        return this.mostrarErro('Preencha o Nível da formação');
+      }
+      else if (!this.novaFormacao.status) {
+        return this.mostrarErro('Preencha o Status da formação');
+      }
+      else if (!this.novaFormacao.dataInicio) {
+        return this.mostrarErro('Preencha a Data de Início');
+      }
+      else if (!this.novaFormacao.status) {
+        return this.mostrarErro('Preencha a Data de Conclusão');
       }
 
       try {
@@ -718,7 +795,7 @@ export default {
           const formId = this.curriculo.formacoes[this.editandoIndexFormacao].id;
           
           if (formId) {
-            await formacaoService.atualizarFormacao(formId, this.novaFormacao);
+            await formacaoService.atualizarFormacao(this.novaFormacao);
           }
           
           this.curriculo.formacoes.splice(this.editandoIndexFormacao, 1, { ...this.novaFormacao });
@@ -742,9 +819,19 @@ export default {
         this.resetarFormFormacao();
         
       } catch (error) {
-        console.error('Erro ao salvar formação:', error);
-        this.errorMessage = 'Erro ao salvar formação. Tente novamente.';
-        setTimeout(() => this.errorMessage = '', 3000);
+        const apiResponse = error.response; 
+
+        if (apiResponse && apiResponse.status === 400) {
+          const errorCode = apiResponse.data.code;
+          
+          if (errorCode === 'DataInicio_Futura') {
+            return this.mostrarErro('A data de início não pode ser posterior à data atual.');
+          } else {
+            return this.mostrarErro('Erro de validação ao salvar a formação.');
+          }
+        } else {
+          return this.mostrarErro('Erro ao salvar formação. Verifique a conexão e o servidor.');
+        }
       }
       
       setTimeout(() => this.successMessage = '', 2000);
@@ -771,9 +858,7 @@ export default {
 
     async adicionarCertificacao() {
       if (!this.novaCertificacao.nome && !this.novaCertificacao.instituicao) {
-        this.errorMessage = 'Preencha pelo menos o nome ou a instituição';
-        setTimeout(() => this.errorMessage = '', 3000);
-        return;
+        return this.mostrarErro('Preencha pelo menos o nome ou a instituição');
       }
 
       try {
@@ -781,7 +866,7 @@ export default {
           const certId = this.curriculo.certificacoes[this.editandoIndexCertificacao].id;
           
           if (certId) {
-            await certificacaoService.atualizarCertificacao(certId, this.novaCertificacao);
+            await certificacaoService.atualizarCertificacao(this.novaCertificacao);
           }
           
           this.curriculo.certificacoes.splice(this.editandoIndexCertificacao, 1, { ...this.novaCertificacao });
@@ -805,11 +890,20 @@ export default {
         this.resetarFormCertificacao();
         
       } catch (error) {
-        console.error('Erro ao salvar certificação:', error);
-        this.errorMessage = 'Erro ao salvar certificação. Tente novamente.';
-        setTimeout(() => this.errorMessage = '', 3000);
+          const apiResponse = error.response; 
+
+          if (apiResponse && apiResponse.status === 400) {
+              const errorCode = apiResponse.data.message;
+              if (errorCode === 'DataConclusao_Futura'){
+                  return this.mostrarErro('A data de início não pode ser posterior à data atual.');
+              } else {
+                  return this.mostrarErro(apiResponse.data.message || 'Erro de validação ao salvar o certificado.');
+              }
+          } else {
+              return this.mostrarErro('Erro ao salvar certificado. Verifique a conexão e o servidor.');
+          }
+          
       }
-      
       setTimeout(() => this.successMessage = '', 2000);
     },
 
@@ -888,8 +982,7 @@ export default {
         setTimeout(() => this.successMessage = '', 2000);
       } catch (error) {
         console.error('Erro ao excluir:', error);
-        this.errorMessage = `Erro ao excluir ${tipo}. Tente novamente.`;
-        setTimeout(() => this.errorMessage = '', 3000);
+        return this.mostrarErro(`Erro ao excluir ${tipo}. Tente novamente.`);
       } finally {
         this.itemParaRemover = null;
         this.showConfirmModal = false;
@@ -961,11 +1054,97 @@ export default {
           this.$router.push(`/curriculo/visualizar/${this.curriculo.id || this.curriculoId}`);
         }, 2000);
       } catch (error) {
-        console.error('Erro ao salvar:', error);
-        this.errorMessage = 'Erro ao salvar currículo';
+        return this.mostrarErro('Erro ao salvar currículo');
       } finally {
         this.loading = false;
       }
+    },
+    async continuarPerfil() {
+    try {
+        this.loading = true;
+        
+        if (this.modoEdicao) {
+            await curriculoService.atualizarCurriculo(this.curriculo);
+            this.successMessage = 'Currículo atualizado com sucesso!';
+            setTimeout(() => this.successMessage = '', 3000);
+        } else {
+            const data = await curriculoService.adicionarCurriculo(this.curriculo);
+            this.curriculoId = data.id;
+            this.curriculo.id = data.id;
+            this.successMessage = 'Currículo salvo com sucesso!';
+            setTimeout(() => this.successMessage = '', 3000);
+        }
+        this.curriculoOriginal = JSON.parse(JSON.stringify(this.curriculo));
+        
+        return true;
+    } catch (error) {
+        const apiResponse = error.response;
+        if (apiResponse && apiResponse.status === 400) {
+            const errorCode = apiResponse.data.code;
+            if (errorCode === 'DataNascimento_Invalida'){
+                return this.mostrarErro('A data de nascimento é inválida');
+            } else {
+                return this.mostrarErro('Erro de validação ao salvar a experiência.');
+            }
+        } else {
+            return this.mostrarErro('Erro ao salvar experiência. Verifique a conexão e o servidor.');
+        }
+      } finally {
+        this.loading = false;
+      }
+  },
+  nextStepPerfil() {
+    if (this.hasChanges()) {
+        this.continuarPerfil().then(sucesso => {
+            if (sucesso) {
+                this.step++;
+                console.log("AA")
+            }
+        });
+    } else {
+        this.step++;
+        console.log("AA")
+    }
+  },
+  async voltarLogin() {
+    try {
+      await usuarioService.logout();
+      
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      this.$router.replace('/login').then(() => {
+        window.location.reload();
+      });
+      
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      this.$router.replace('/login').then(() => {
+        window.location.reload();
+      });
+    }
+  },
+  abrirModal() {
+      this.modalAberto = true;
+    },
+    fecharModal() {
+      this.modalAberto = false;
+    },
+    async confirmarSair() {
+      try {
+        await usuarioService.logout();
+        this.curriculo = null;
+        this.$router.replace('/login').then(() => {
+          window.location.reload();
+        });
+      } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+        this.$router.replace('/login').then(() => {
+          window.location.reload();
+        });
+      }
+    },
+    hasChanges() {
+      return JSON.stringify(this.curriculo) !== JSON.stringify(this.curriculoOriginal);
     }
   }
 }
@@ -1255,6 +1434,23 @@ input::placeholder, textarea::placeholder {
 
 .btn-add:hover {
   background: #1f2937;
+}
+
+.btn-back{
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  left: auto;
+}
+
+.btn-back:hover {
+  background: #f9fafb;
 }
 
 .btn-ia {

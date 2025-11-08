@@ -1,4 +1,3 @@
-// src/services/FormacaoService.ts
 import axios from 'axios';
 import type { Formacao } from 'src/models/Formacao';
 

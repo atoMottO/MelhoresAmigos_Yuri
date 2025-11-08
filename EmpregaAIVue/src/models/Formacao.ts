@@ -1,11 +1,11 @@
 export interface Formacao {
   id: string;
   curriculoId: string; 
-  instituicao: string;
-  curso: string;
-  nivel: string;
-  status: string;
-  dataInicio: string;
-  dataConclusao: string;
-  excluido: boolean;
+  instituicao: string | null;
+  curso: string | null;
+  nivel: string | null;
+  status: string | null;
+  dataInicio: string | null;
+  dataConclusao: string | null;
+  excluido: boolean | null;
 }
