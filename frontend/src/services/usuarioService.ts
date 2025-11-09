@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Usuario } from 'src/models/Usuario';
 
-const API_URL = 'https://localhost:44388/api/Usuario';
+const API_URL = 'http://54.91.139.40:8080/api/Usuario ';
 
 class UsuarioService {
   async adicionarUsuario(usuario: Omit<Usuario, 'id' | 'ativo' | 'excluido'>): Promise<Usuario> {

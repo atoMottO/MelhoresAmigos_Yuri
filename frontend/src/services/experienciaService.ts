@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Experiencia } from 'src/models/Experiencia';
 
-const API_URL = 'https://localhost:44388/api/Experiencia';
+const API_URL = 'http://54.91.139.40:8080/api/Experiencia ';
 
 class ExperienciaService {
   async adicionarExperiencia(Experiencia: Omit<Experiencia, 'id'>): Promise<Experiencia> {

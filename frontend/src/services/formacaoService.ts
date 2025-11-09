@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Formacao } from 'src/models/Formacao';
 
-const API_URL = 'https://localhost:44388/api/Formacao';
+const API_URL = 'http://54.91.139.40:8080/api/Formacao ';
 
 class FormacaoService {
   async adicionarFormacao(Formacao: Omit<Formacao, 'id' | 'ativo' | 'excluido'>): Promise<Formacao> {
