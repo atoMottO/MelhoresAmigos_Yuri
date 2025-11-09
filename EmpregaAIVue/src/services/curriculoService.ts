@@ -1,4 +1,3 @@
-// src/services/CurriculoService.ts
 import axios from 'axios';
 import type { Curriculo } from 'src/models/Curriculo';
 

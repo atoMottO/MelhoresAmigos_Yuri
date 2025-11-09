@@ -45,6 +45,8 @@ export default {
     return {
       aberto: false,
       niveis: [
+        'Ensino Fundamental',
+        'Ensino Médio',
         'Técnico',
         'Graduação',
         'Pós-graduação',

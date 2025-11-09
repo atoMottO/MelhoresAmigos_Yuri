@@ -1,4 +1,3 @@
-// src/services/CertificacaoService.ts
 import axios from 'axios';
 import type { Certificacao } from 'src/models/Certificacao';
 

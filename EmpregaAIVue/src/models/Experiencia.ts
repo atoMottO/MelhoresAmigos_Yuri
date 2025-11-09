@@ -1,11 +1,11 @@
 export interface Experiencia {
   id: string;
   curriculoId: string; 
-  empresa: string;
-  cargo: string;
+  empresa: string | null;
+  cargo: string | null;
   dataInicio: string;
-  dataFim: string;
+  dataFim: string | null;
   empregoAtual: boolean;
-  descricao: string;
-  excluido: boolean;
+  descricao: string | null;
+  excluido: boolean | null;
 }

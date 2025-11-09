@@ -1,6 +1,5 @@
 <template>
   <div class="auth-page">
-    <!-- Background animado -->
     <div 
       class="bg-left" 
       :style="{ width: activeMode === 'login' ? '60%' : '40%' }"
@@ -10,13 +9,10 @@
       :style="{ width: activeMode === 'cadastro' ? '60%' : '40%' }"
     ></div>
 
-    <!-- Container principal -->
     <div class="auth-container">
-      <!-- SEÇÃO LOGIN -->
       <div 
         :class="['auth-section', 'login-section', { active: activeMode === 'login', inactive: activeMode !== 'login' }]"
       >
-        <!-- Formulário Login -->
         <transition name="fade-form">
           <div v-if="activeMode === 'login'" class="form-wrapper" key="login-form">
             <div class="form-content">
@@ -67,26 +63,15 @@
           </div>
         </transition>
 
-        <!-- Preview Login -->
         <transition name="fade-preview">
           <div v-if="activeMode !== 'login'" class="preview" key="login-preview">
-            <!-- <div class="preview-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </div>
-            <h2>Bem-vindo</h2>
-            <p>Entre com sua conta</p> -->
           </div>
         </transition>
       </div>
 
-      <!-- SEÇÃO CADASTRO -->
       <div 
         :class="['auth-section', 'cadastro-section', { active: activeMode === 'cadastro', inactive: activeMode !== 'cadastro' }]"
       >
-        <!-- Formulário Cadastro -->
         <transition name="fade-form">
           <div v-if="activeMode === 'cadastro'" class="form-wrapper" key="cadastro-form">
             <div class="form-content">
@@ -163,19 +148,8 @@
           </div>
         </transition>
 
-        <!-- Preview Cadastro -->
         <transition name="fade-preview">
           <div v-if="activeMode !== 'cadastro'" class="preview" key="cadastro-preview">
-            <!-- <div class="preview-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-            </div>
-            <h2>Criar conta</h2>
-            <p>Preencha os dados para começar</p> -->
           </div>
         </transition>
       </div>
@@ -235,7 +209,6 @@ export default {
         const loginValido = await usuarioService.login(this.loginEmail, this.loginPassword);
         
         if (loginValido) {
-          // Busca o usuário completo
           const usuarios = await usuarioService.listarUsuarios();
           const usuario = usuarios.find(u => u.email === this.loginEmail);
           
@@ -247,7 +220,6 @@ export default {
             
             localStorage.setItem('usuario', JSON.stringify(usuarioParaSalvar));
             
-            // Verifica se tem currículo usando o service
             try {
               const curriculos = await curriculoService.listarCurriculosPorUsuario(usuario.id);
               console.log(curriculos)
@@ -255,12 +227,10 @@ export default {
                 console.log("AAAAAA")
                 this.$router.push(`/curriculo/visualizar/${curriculos.id}`);
               } else {
-                // NÃO TEM CURRÍCULO - Vai para criar
                 this.$router.push('/curriculo');
               }
             } catch (error) {
               console.error('Erro ao verificar currículo:', error);
-              // Em caso de erro, vai para criar
               this.$router.push('/curriculo');
             }
           }

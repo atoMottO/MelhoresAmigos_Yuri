@@ -1,4 +1,3 @@
-// src/services/usuarioService.ts
 import axios from 'axios';
 import type { Usuario } from 'src/models/Usuario';
 
@@ -14,9 +13,26 @@ class UsuarioService {
       params: {
         email,
         senha
-      }
+      },
+      withCredentials: true
     });
     return response.data;
+  }
+  async verificarSessao(): Promise<boolean> {
+    try {
+      const response = await axios.get<{ autenticado: boolean }>(
+        `${API_URL}/verificar-sessao`,
+        { withCredentials: true }
+      );
+      return response.data.autenticado;
+    } catch {
+      return false;
+    }
+  }
+  async logout(): Promise<void> {
+    await axios.post(`${API_URL}/logout`, {}, {
+      withCredentials: true
+    });
   }
   async listarUsuarios(): Promise<Usuario[]> {
     const response = await axios.get<Usuario[]>(API_URL);
