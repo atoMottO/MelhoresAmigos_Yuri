@@ -23,10 +23,6 @@ interface GroqResponse {
 class IAFormattingService {
   private groqApiKey: string = import.meta.env.VITE_GROQ_API_KEY;
   private groqApiUrl: string = 'https://api.groq.com/openai/v1/chat/completions';
-
-  /**
-   * Formata a descrição de atividades profissionais usando IA
-   */
   async formatarDescricaoProfissional(descricao: string, cargo?: string): Promise<string> {
     try {
       const prompt = this.criarPrompt(descricao, cargo);
@@ -61,12 +57,10 @@ class IAFormattingService {
       return response.data.choices[0].message.content.trim();
       
     } catch (error) {
-      console.error('Erro ao formatar com IA:', error);
       
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<any>;
         if (axiosError.response) {
-          console.error('Erro da API:', axiosError.response.data);
           throw new Error(`Erro da API: ${axiosError.response.data.error?.message || 'Erro desconhecido'}`);
         } else if (axiosError.request) {
           throw new Error('Erro de conexão com a API. Verifique sua internet.');
@@ -76,10 +70,6 @@ class IAFormattingService {
       throw new Error('Erro ao configurar a requisição.');
     }
   }
-
-  /**
-   * Cria o prompt otimizado para formatação profissional
-   */
   private criarPrompt(descricao: string, cargo?: string): string {
     let contexto = '';
     

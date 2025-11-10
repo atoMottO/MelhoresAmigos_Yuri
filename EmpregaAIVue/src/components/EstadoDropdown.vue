@@ -132,19 +132,19 @@ export default {
   color: #111827;
   font-size: 14px;
   font-weight: 500;
-  line-height: 1;  /* ← Adicione para alinhar verticalmente */
+  line-height: 1;
 }
 
 .placeholder {
   color: #9ca3af;
   font-size: 14px;
-  line-height: 1;  /* ← Adicione para alinhar verticalmente */
+  line-height: 1;
 }
 
 .icone-seta {
   color: #6b7280;
   transition: transform 0.3s ease;
-  flex-shrink: 0;  /* ← Impede que o ícone encolha */
+  flex-shrink: 0;
 }
 
 .icone-seta.rotacionado {

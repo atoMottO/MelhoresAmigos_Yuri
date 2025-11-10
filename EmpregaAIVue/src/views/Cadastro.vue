@@ -144,7 +144,6 @@ export default {
         }, 100);
 
       } catch (error) {
-        console.error('Erro ao cadastrar:', error);
         
         if (error.response) {
           this.errorMessage = error.response.data.message || 'Erro ao realizar cadastro';

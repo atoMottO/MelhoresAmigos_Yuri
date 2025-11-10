@@ -51,7 +51,6 @@ router.beforeEach(async (to, from, next) => {
         next('/login')
       }
     } catch (error) {
-      console.error('Erro ao verificar sessão:', error)
       next('/login')
     }
   } else {
