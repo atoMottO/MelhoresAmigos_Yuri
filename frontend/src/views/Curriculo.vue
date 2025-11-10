@@ -286,7 +286,7 @@
 
         <div class="button-group">
           <button class="btn-secondary" @click="prevStep">Voltar</button>
-          <button class="btn-primary" @click="salvarCurriculo" :disabled="loading">
+          <button class="btn-primary" @click="updateCurriculo" :disabled="loading">
             <span v-if="!loading">Salvar Currículo</span>
             <span v-else class="loading-spinner"></span>
           </button>
@@ -424,13 +424,12 @@ export default {
   },
   async created() {
     const usuarioLogado = localStorage.getItem('usuario');
-    
     if (usuarioLogado) {
-      console.log(usuarioLogado)
       const usuario = JSON.parse(usuarioLogado);
+      const user = await usuarioService.listarUsuarioPorId(usuario.id);
       this.curriculo.usuarioId = usuario.id;
       this.curriculo.email = usuario.email || '';
-      this.curriculo.nomeCompleto = usuario.nome;
+      this.curriculo.nomeCompleto = user.nome;
       if (this.$route.params.id) {
         this.modoEdicao = true;
         this.curriculoId = this.$route.params.id;
@@ -455,7 +454,6 @@ export default {
             this.curriculo.formacoes = Array.isArray(formacoes) ? formacoes : [];
             this.curriculo.certificacoes = Array.isArray(certificados) ? certificados : [];
           } catch (error) {
-            console.error("Erro ao carregar listas de currículo:", error);
             return this.mostrarErro('Erro ao carregar experiências, formações ou certificados.');
           }
         } else {
@@ -676,7 +674,6 @@ export default {
       const data = new Date(dataString);
       
       if (isNaN(data.getTime())) {
-        console.error('Data inválida:', dataString);
         return '';
       }
       
@@ -707,7 +704,6 @@ export default {
               const expId = this.curriculo.experiencias[this.editandoIndexExperiencia].id;
               
               if (expId) {
-                  console.log(this.novaExperiencia);
                   await experienciaService.atualizarExperiencia(this.novaExperiencia);
               }
               
@@ -743,8 +739,6 @@ export default {
               
               if (errorCode === 'DataInicio_Futura'){
                   return this.mostrarErro('A data de início não pode ser posterior à data atual.');
-              } else {
-                  return this.mostrarErro(apiResponse.data.message || 'Erro de validação ao salvar a experiência.');
               }
           } else {
               return this.mostrarErro('Erro ao salvar experiência. Verifique a conexão e o servidor.');
@@ -826,8 +820,6 @@ export default {
           
           if (errorCode === 'DataInicio_Futura') {
             return this.mostrarErro('A data de início não pode ser posterior à data atual.');
-          } else {
-            return this.mostrarErro('Erro de validação ao salvar a formação.');
           }
         } else {
           return this.mostrarErro('Erro ao salvar formação. Verifique a conexão e o servidor.');
@@ -896,8 +888,6 @@ export default {
               const errorCode = apiResponse.data.message;
               if (errorCode === 'DataConclusao_Futura'){
                   return this.mostrarErro('A data de início não pode ser posterior à data atual.');
-              } else {
-                  return this.mostrarErro(apiResponse.data.message || 'Erro de validação ao salvar o certificado.');
               }
           } else {
               return this.mostrarErro('Erro ao salvar certificado. Verifique a conexão e o servidor.');
@@ -981,7 +971,6 @@ export default {
 
         setTimeout(() => this.successMessage = '', 2000);
       } catch (error) {
-        console.error('Erro ao excluir:', error);
         return this.mostrarErro(`Erro ao excluir ${tipo}. Tente novamente.`);
       } finally {
         this.itemParaRemover = null;
@@ -1024,7 +1013,6 @@ export default {
         }, 3000);
 
       } catch (error) {
-        console.error('Erro ao formatar com IA:', error);
         this.iaMessage = 'Erro ao melhorar. Tente novamente.';
         this.iaMessageType = 'error';
         
@@ -1041,7 +1029,7 @@ export default {
       try {
         this.loading = true;
         
-        if (this.modoEdicao) {
+        if (this.curriculo.idUsuario) {
           await curriculoService.atualizarCurriculo(this.curriculo);
           this.successMessage = 'Currículo atualizado com sucesso!';
         } else {
@@ -1059,11 +1047,25 @@ export default {
         this.loading = false;
       }
     },
+    async updateCurriculo() {
+      try {
+        this.loading = true;
+        await curriculoService.atualizarCurriculo(this.curriculo);
+        this.successMessage = 'Currículo atualizado com sucesso!';
+        setTimeout(() => {
+          this.$router.push(`/curriculo/visualizar/${this.curriculo.id || this.curriculoId}`);
+        }, 2000);
+      } catch (error) {
+        return this.mostrarErro('Erro ao salvar currículo');
+      } finally {
+        this.loading = false;
+      }
+    },
     async continuarPerfil() {
     try {
         this.loading = true;
         
-        if (this.modoEdicao) {
+        if (this.curriculo.id) {
             await curriculoService.atualizarCurriculo(this.curriculo);
             this.successMessage = 'Currículo atualizado com sucesso!';
             setTimeout(() => this.successMessage = '', 3000);
@@ -1083,8 +1085,6 @@ export default {
             const errorCode = apiResponse.data.code;
             if (errorCode === 'DataNascimento_Invalida'){
                 return this.mostrarErro('A data de nascimento é inválida');
-            } else {
-                return this.mostrarErro('Erro de validação ao salvar a experiência.');
             }
         } else {
             return this.mostrarErro('Erro ao salvar experiência. Verifique a conexão e o servidor.');
@@ -1094,16 +1094,17 @@ export default {
       }
   },
   nextStepPerfil() {
+    if (this.curriculo.dataNascimento == ''){
+      this.mostrarErro("Preencha a data de nascimento.")
+    }
     if (this.hasChanges()) {
         this.continuarPerfil().then(sucesso => {
             if (sucesso) {
                 this.step++;
-                console.log("AA")
             }
         });
     } else {
         this.step++;
-        console.log("AA")
     }
   },
   async voltarLogin() {
@@ -1117,7 +1118,6 @@ export default {
       });
       
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
       this.$router.replace('/login').then(() => {
         window.location.reload();
       });
@@ -1137,7 +1137,6 @@ export default {
           window.location.reload();
         });
       } catch (error) {
-        console.error('Erro ao fazer logout:', error);
         this.$router.replace('/login').then(() => {
           window.location.reload();
         });

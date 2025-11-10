@@ -31,7 +31,6 @@
                 <input 
                   type="email" 
                   v-model="loginEmail"
-                  placeholder="seu@email.com"
                   @keyup.enter="handleLogin"
                 />
               </div>
@@ -39,7 +38,8 @@
               <div class="form-group">
                 <PasswordInputEscuro type="password" 
                 placeholder="••••••••"
-                v-model="loginPassword"/>
+                v-model="loginPassword"
+                @enter="handleLogin"/>
               </div>
 
               <button 
@@ -104,23 +104,17 @@
               </div>
 
               <div class="form-group">
-                <label>Senha</label>
-                <input 
-                  type="password" 
-                  v-model="cadastroPassword"
-                  placeholder="••••••••"
-                />
-                <small>Mínimo 6 caracteres</small>
+                <PasswordInputClaro type="password" 
+                placeholder="••••••••"
+                v-model="cadastroPassword"/>
               </div>
 
               <div class="form-group">
-                <label>Confirmar</label>
-                <input 
-                  type="password" 
-                  v-model="cadastroConfirmPassword"
-                  placeholder="••••••••"
-                  @keyup.enter="handleCadastro"
-                />
+                <PasswordInputClaro type="password" 
+                placeholder="••••••••"
+                v-model="cadastroConfirmPassword"
+                label="Confirmar Senha"
+                @keyup.enter="handleCadastro"/>
               </div>
 
               <button 
@@ -164,11 +158,13 @@
 import usuarioService from '@/services/usuarioService';
 import curriculoService from '@/services/curriculoService';
 import PasswordInputEscuro from '@/components/PasswordInputEscuro.vue';
+import PasswordInputClaro from '@/components/PasswordInputClaro.vue';
 
 export default {
   name: 'AuthUnified',
   components: {
     PasswordInputEscuro,
+    PasswordInputClaro,
   },
   data() {
     return {
@@ -222,15 +218,12 @@ export default {
             
             try {
               const curriculos = await curriculoService.listarCurriculosPorUsuario(usuario.id);
-              console.log(curriculos)
               if (curriculos) {
-                console.log("AAAAAA")
                 this.$router.push(`/curriculo/visualizar/${curriculos.id}`);
               } else {
                 this.$router.push('/curriculo');
               }
             } catch (error) {
-              console.error('Erro ao verificar currículo:', error);
               this.$router.push('/curriculo');
             }
           }
@@ -238,8 +231,10 @@ export default {
           this.loginError = 'Email ou senha inválidos';
         }
       } catch (error) {
-        console.error('Erro ao fazer login:', error);
-        this.loginError = 'Erro ao fazer login. Tente novamente.';
+        if (error.status == 401){
+          this.loginError = 'Email ou senha inválidos';
+        }
+        else this.loginError = 'Erro ao fazer login. Tente novamente.';
       } finally {
         this.loading = false;
       }
@@ -290,7 +285,6 @@ export default {
         }, 1500);
 
       } catch (error) {
-        console.error('Erro ao cadastrar:', error);
         if (error.response?.status === 400){
           this.errorMessage = 'E-mail já cadastrado. Redirecionando ao Login'
           setTimeout(() => {
@@ -332,7 +326,6 @@ export default {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
-/* BACKGROUNDS ANIMADOS */
 .bg-left {
   position: fixed;
   left: 0;
@@ -353,7 +346,6 @@ export default {
   z-index: 0;
 }
 
-/* CONTAINER */
 .auth-container {
   position: relative;
   z-index: 1;
@@ -378,8 +370,7 @@ export default {
 .auth-section.inactive {
   flex: 4;
 }
-
-/* FORMULÁRIOS */
+ 
 .form-wrapper {
   width: 100%;
   max-width: 440px;
@@ -510,8 +501,7 @@ export default {
 .cadastro-section small {
   color: #6b7280;
 }
-
-/* BOTÕES */
+ 
 .btn-submit {
   width: 100%;
   padding: 14px;
@@ -576,7 +566,6 @@ export default {
   to { transform: rotate(360deg); }
 }
 
-/* ALERTAS */
 .alert-error,
 .alert-success {
   padding: 12px 16px;
@@ -648,7 +637,6 @@ export default {
   border: 1px solid #bbf7d0;
 }
 
-/* FOOTER TEXT */
 .footer-text {
   text-align: center;
   margin-top: 24px;
@@ -682,7 +670,6 @@ export default {
   opacity: 0.7;
 }
 
-/* PREVIEW */
 .preview {
   text-align: center;
   padding: 40px;
@@ -729,7 +716,6 @@ export default {
   opacity: 0.7;
 }
 
-/* TRANSIÇÕES */
 .fade-form-enter-active {
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
 }
@@ -766,7 +752,6 @@ export default {
   transform: scale(0.95);
 }
 
-/* RESPONSIVO */
 @media (max-width: 768px) {
   .auth-container {
     flex-direction: column;

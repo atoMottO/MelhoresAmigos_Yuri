@@ -26,7 +26,7 @@
 <script>
 export default {
   name: "PasswordToggleInput",
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'enter'],
   data() {
     return {
       input_type: this.type,
@@ -70,66 +70,62 @@ export default {
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 8px;
-  color: rgba(255, 255, 255, 0.9);
+  color: #333333;
 }
+
 .form-group small {
   display: block;
   font-size: 12px;
   margin-top: 6px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #666666;
 }
 
 .input-container {
   position: relative;
   width: 82%;
 }
+
 .input-container .password-input-field {
   width: 100%;
   padding: 14px 45px 14px 16px; 
   
-  background-color: #242424; 
-  color: rgba(255, 255, 255, 0.9);
-  border: none;
+  background-color: #ffffff;
+  color: #333333;
+  
+  border: 1.5px solid #e7e7e7;
+  
   border-radius: 10px; 
   font-size: 15px;
   font-family: inherit;
   transition: all 0.2s;
+  
   &::placeholder { 
-    color: rgba(255, 255, 255, 0.4);
+    color: #999999;
   }
 }
+
+.input-container .password-input-field:focus {
+  outline: none;
+  border-color: #999999;
+}
+
 .toggle-button {
   position: absolute;
   top: 50%;
   right: 1px;
-  left: 107%;
+  left: 103%;
   transform: translateY(-50%);
   
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
-  color: rgba(255, 255, 255, 0.6); 
-  font-size: 14px;
+  padding: 8px;
+  color: #666666; 
+  font-size: 16px;
   transition: color 0.2s;
 }
 
 .toggle-button:hover {
-  color: rgba(255, 255, 255, 0.9);
-}
-.input-container .password-input-field {
-  width: 100%;
-  padding: 14px 45px 14px 16px; 
-  background-color: #242424; 
-  color: rgba(255, 255, 255, 0.9);
-  border: 1.5px solid #545454;
-  border-radius: 10px; 
-  font-size: 15px;
-  font-family: inherit;
-  transition: all 0.2s;
-  
-  &::placeholder { 
-    color: rgba(255, 255, 255, 0.4);
-  }
+  color: #333333;
 }
 </style>

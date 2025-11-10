@@ -21,7 +21,6 @@ export default {
   outline: none !important;
 }
 
-/* Remove o cursor piscante de elementos não editáveis */
 div:focus,
 p:focus,
 span:focus,
@@ -29,13 +28,11 @@ button:focus {
   caret-color: transparent;
 }
 
-/* Mantém o cursor apenas nos inputs */
 input:focus,
 textarea:focus {
   caret-color: auto;
 }
 
-/* Remove seleção em elementos não editáveis */
 .login-container,
 .cadastro-container {
   user-select: none;
@@ -43,7 +40,6 @@ textarea:focus {
   -moz-user-select: none;
 }
 
-/* Permite seleção apenas nos inputs */
 input,
 textarea {
   user-select: text;
@@ -66,7 +62,6 @@ body {
   padding: 0 !important;
   overflow-x: hidden;
 }
-/* Garante que todos os elementos herdem a fonte */
 *, *::before, *::after {
   font-family: inherit;
 }

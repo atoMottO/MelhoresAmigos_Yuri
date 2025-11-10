@@ -186,7 +186,6 @@ export default {
           window.location.reload();
         });
       } catch (error) {
-        console.error('Erro ao fazer logout:', error);
         this.$router.replace('/login').then(() => {
           window.location.reload();
         });
@@ -245,7 +244,6 @@ export default {
         });
         
       } catch (error) {
-        console.error('Erro ao fazer logout:', error);
         this.$router.replace('/login').then(() => {
           window.location.reload();
         });
@@ -714,36 +712,28 @@ export default {
   text-decoration: underline;
 }
 
-/* Estilos de impressão */
 @media print {
-  /* ... (outros estilos de impressão) ... */
-
-  /* ✅ FORÇA CORES ESCURAS NO PDF/IMPRESSÃO */
-  .cv-header h1, /* Nome */
-  .cv-section h2, /* Títulos de Seção */
-  .cv-item h3 /* Títulos de Cargo/Curso */ {
-    /* Força para preto puro */
+  .cv-header h1,
+  .cv-section h2,
+  .cv-item h3{
     color: #000000 !important;
   }
 
-  .company, /* Nome da Empresa/Instituição */
-  .description, /* Descrição da Experiência */
+  .company,
+  .description,
   .contact-info,
   .contact-info span {
-    /* Força para um cinza muito escuro (quase preto) */
     color: #1f2937 !important; 
   }
 
-  .period, /* Período (datas) */
+  .period,
   .dates,
   .cert-meta {
-    /* Força para um cinza escuro */
     color: #374151 !important;
   }
 
   .social-links a,
   .cert-link {
-    /* Força links para azul marinho escuro */
     color: #1e40af !important;
   }
 }
