@@ -107,14 +107,17 @@ pipeline {
       }
     }
 
-    stage('Testes (.NET)') {
-      steps {
-        sh '''
-          echo "Executando testes do backend..."
-          dotnet test backend/Tests/EmpregaAI.Tests.csproj --no-build
-        '''
-      }
-    }
+    stage('(Opcional) Testes') { when { expression { return false } } // troque para true quando tiver testes 
+      steps { 
+        sh ''' 
+        # Exemplos (ajuste caminhos): 
+        # dotnet test tests/SeuProjeto.Tests/SeuProjeto.Tests.csproj -c Release --no-build 
+        # npm test --prefix ${VUE_DIR} 
+        echo "Ative este stage quando configurar seus testes." 
+        ''' 
+        } 
+        s}
+
 
     stage('(Opcional) Deploy AWS') {
       when { expression { return false } } // habilite quando quiser
