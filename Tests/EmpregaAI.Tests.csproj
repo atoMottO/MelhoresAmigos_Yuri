@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\\EmpregaAI.csproj" />
+    <ProjectReference Include="..\backend\EmpregaAI.csproj" />
   </ItemGroup>
 
 </Project>
