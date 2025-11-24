@@ -20,6 +20,7 @@
 
 
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<Compile Remove="Tests\**\*.cs" />
 	</ItemGroup>
 
 </Project>
