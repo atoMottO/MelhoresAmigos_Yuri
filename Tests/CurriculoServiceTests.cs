@@ -56,7 +56,7 @@ public class CurriculoServiceTests
 
         var curriculo = new Curriculo
         {
-            Nome = "Ana",
+            NomeCompleto = "Ana",
             DataNascimento = DateTime.Today.AddDays(1)
         };
 
@@ -86,7 +86,7 @@ public class CurriculoServiceTests
 
         var curriculo = new Curriculo
         {
-            Nome = "Pedro",
+            NomeCompleto = "Pedro",
             UsuarioId = Guid.NewGuid(),
             DataNascimento = new DateTime(1995, 1, 1)
         };
@@ -107,19 +107,19 @@ public class CurriculoServiceTests
 
         var curriculo = new Curriculo
         {
-            Nome = "Carlos",
+            NomeCompleto = "Carlos",
             UsuarioId = Guid.NewGuid(),
             DataNascimento = new DateTime(1993, 1, 1)
         };
 
         await service.AdicionaCurriculo(curriculo);
 
-        curriculo.Nome = "Carlos Alterado";
+        curriculo.NomeCompleto = "Carlos Alterado";
 
         var atualizado = await service.AtualizarCurriculo(curriculo);
 
         Assert.NotNull(atualizado);
-        Assert.Equal("Carlos Alterado", atualizado.Nome);
+        Assert.Equal("Carlos Alterado", atualizado.NomeCompleto);
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public class CurriculoServiceTests
 
         var curriculo = new Curriculo
         {
-            Nome = "Lucas",
+            NomeCompleto = "Lucas",
             UsuarioId = Guid.NewGuid(),
             DataNascimento = new DateTime(1994, 1, 1)
         };
