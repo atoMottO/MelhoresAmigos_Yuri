@@ -11,7 +11,6 @@
     <PackageReference Include="coverlet.collector" Version="3.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.28" />
   </ItemGroup>
-  
 
   <ItemGroup>
     <ProjectReference Include="../backend/EmpregaAI.csproj" />
