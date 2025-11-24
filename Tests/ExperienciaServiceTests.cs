@@ -3,6 +3,8 @@ using EmpregaAI.Services;
 using EmpregaAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
+using System.Threading.Tasks;
+
 
 public class ExperienciaServiceTests
 {

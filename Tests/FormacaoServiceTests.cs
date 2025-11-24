@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using EmpregaAI.Services;
 using EmpregaAPI.Data;
 using EmpregaAI.Models;
+using System.Threading.Tasks;
+
 
 public class FormacaoServiceTests
 {

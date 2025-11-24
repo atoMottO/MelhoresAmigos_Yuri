@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using EmpregaAPI.Data;
 using EmpregaAI.Services;
 using EmpregaAI.Models;
+using System.Threading.Tasks;
+
 
 public class CurriculoServiceTests
 {
