@@ -1,18 +1,74 @@
 using Xunit;
 using EmpregaAI.Services;
+using EmpregaAPI.Data;
+using EmpregaAPI.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 public class UsuarioServiceTests
 {
-    [Fact]
-    public void DeveRetornarNulo_QuandoUsuarioNaoExiste()
+    private readonly UsuarioService _service;
+    private readonly AplicacaoContext _context;
+
+    public UsuarioServiceTests()
     {
-        // Arrange
-        var service = new UsuarioService();
+        var options = new DbContextOptionsBuilder<AplicacaoContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
 
-        // Act
-        var usuario = service.BuscarPorId(999);
+        _context = new AplicacaoContext(options);
+        _service = new UsuarioService(_context);
+    }
 
-        // Assert
-        Assert.Null(usuario);
+    [Fact]
+    public async Task DeveRetornarListaVazia_QuandoNaoExistemUsuarios()
+    {
+        var lista = await _service.ListarUsuarios();
+
+        Assert.Empty(lista);
+    }
+
+    [Fact]
+    public async Task DeveRetornarNulo_QuandoUsuarioNaoExiste()
+    {
+        var result = await _service.ListarUsuarioPorID(Guid.NewGuid());
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task DeveAdicionarUsuario_QuandoEmailNaoExiste()
+    {
+        var usuario = new Usuario
+        {
+            Nome = "Teste",
+            Email = "teste@teste.com",
+            Senha = "123",
+            Excluido = false
+        };
+
+        var criado = await _service.AdicionaUsuario(usuario);
+
+        Assert.NotNull(criado);
+        Assert.False(criado.Excluido);
+        Assert.NotEqual(Guid.Empty, criado.Id);
+    }
+
+    [Fact]
+    public async Task DeveRetornarNulo_QuandoEmailJaExiste()
+    {
+        var usuario = new Usuario
+        {
+            Nome = "Teste",
+            Email = "duplicado@teste.com",
+            Senha = "123",
+        };
+
+        await _service.AdicionaUsuario(usuario);
+
+        var duplicado = await _service.AdicionaUsuario(usuario);
+
+        Assert.Null(duplicado);
     }
 }
