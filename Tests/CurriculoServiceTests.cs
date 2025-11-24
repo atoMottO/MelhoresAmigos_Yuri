@@ -28,12 +28,15 @@ public class CurriculoServiceTests
 
         var curriculo = new Curriculo
         {
-            Nome = "João",
-            Sobrenome = "Silva",
-            CPF = "12345678900",
             UsuarioId = Guid.NewGuid(),
-            DataNascimento = new DateTime(1990, 1, 1)
+            NomeCompleto = "João Silva",
+            DataNascimento = DateTime.Parse("2000-01-01"),
+            Telefone = "11999999999",
+            Email = "teste@teste.com",
+            Cidade = "São Paulo",
+            Estado = "SP"
         };
+
 
         // Act
         var result = await service.AdicionaCurriculo(curriculo);
