@@ -4,7 +4,7 @@ using Xunit;
 using Microsoft.EntityFrameworkCore;
 using EmpregaAPI.Data;
 using EmpregaAI.Services;
-using EmpregaAI.Models;
+using EmpregaAPI.Models;
 using System.Threading.Tasks;
 
 

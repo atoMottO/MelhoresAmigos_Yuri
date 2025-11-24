@@ -25,7 +25,7 @@ public class ExperienciaServiceTests
 
         var experiencia = new Experiencia
         {
-            NomeEmpresa = "Empresa X",
+            Empresa = "Empresa X",
             Cargo = "Dev",
             DataInicio = DateTime.Today.AddDays(-30)
         };
@@ -104,7 +104,7 @@ public class ExperienciaServiceTests
         context.Experiencias.Add(new Experiencia
         {
             Id = id,
-            NomeEmpresa = "Antiga",
+            Empresa = "Antiga",
             Excluido = false,
             DataInicio = DateTime.Today.AddDays(-10)
         });
@@ -115,14 +115,14 @@ public class ExperienciaServiceTests
         var atualizado = new Experiencia
         {
             Id = id,
-            NomeEmpresa = "Nova",
+            Empresa = "Nova",
             DataInicio = DateTime.Today.AddDays(-5)
         };
 
         var result = await service.AtualizarExperiencia(atualizado);
 
         Assert.NotNull(result);
-        Assert.Equal("Nova", result.NomeEmpresa);
+        Assert.Equal("Nova", result.Empresa);
     }
 
     [Fact]
