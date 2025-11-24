@@ -16,4 +16,3 @@ public class UsuarioServiceTests
         Assert.Null(usuario);
     }
 }
-using Xunit;
